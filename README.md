@@ -45,9 +45,15 @@
   ```
 
 + 和Viewport相关的单位有四个，分别为vw、vh、vmin和vmax
-  - vw：是Viewport's width的简写,1vw等于window.innerWidth的1%
-  - vh: 和vw类似，是Viewport's height的简写，1vh等于window.innerHeihgt的1%
-  - vmin：vmin的值是当前vw和vh中较小的值
-  - vmax：vmax的值是当前vw和vh中较大的值
+  + vw：是Viewport's width的简写,1vw等于window.innerWidth的1%
+  + vh: 和vw类似，是Viewport's height的简写，1vh等于window.innerHeihgt的1%
+  + vmin：vmin的值是当前vw和vh中较小的值
+  + vmax：vmax的值是当前vw和vh中较大的值
 
 目前出视觉设计稿，我们都是使用750px宽度的，那么100vw = 750px，即1vw = 7.5px。那么我们可以根据设计图上的px值直接转换成对应的vw值。使用PostCSS的插件postcss-px-to-viewport，让我们可以直接在代码中写px
+
++ 跨域的几种方式
+
+同源策略/SOP（Same origin policy）是一种约定，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，浏览器很容易受到XSS、CSFR等攻击。同源是指"协议+域名+端口"三者相同，即便两个不同的域名指向同一个ip地址，也非同源
+
+  1. 通过jsonp跨域
