@@ -138,3 +138,24 @@
       3. 使用正常的json数据格式进行交互
       4. 部分常用数据的缓存
       5. 需要大量运算时，可以使用webWorker
+
++ 前端需要注意哪些SEO?
+
+      （1）、合理的title、description、keywords：搜索对着三项的权重逐个减小，title值强调重点即可，重要关键词出现不要超过2次，而且要靠前，不同页面title要有所不同；description把页面内容高度概括，长度合适，不可过分堆砌关键词，不同页面description有所不同；keywords列举出重要关键词即可
+      （2）、语义化的HTML代码，符合W3C规范：语义化代码让搜索引擎容易理解网页
+      （3）、重要内容HTML代码放在最前：搜索引擎抓取HTML顺序是从上到下，有的搜索引擎对抓取长度有限制，保证重要内容一定会被抓取
+      （4）、重要内容不要用js输出：爬虫不会执行js获取内容
+      （5）、少用iframe：搜索引擎不会抓取iframe中的内容
+      （6）、非装饰性图片必须加alt
+      （7）、提高网站速度：网站速度是搜索引擎排序的一个重要指标
+
++ sessionStorage,localStorage,cookie区别
+
+      （1）、都会在浏览器端保存，有大小限制，同源限制。
+      （2）、cookie会在请求时发送到服务器，作为会话标识，服务器可修改cookie；web storage不会发送到服务器。
+      （3）、cookie有path概念，子路径可以访问父路径cookie，父路径不能访问子路径cookie
+      （4）、有效期：cookie在设置的有效期内有效，默认为浏览器关闭；sessionStorage在窗口关闭前有效，localStorage长期有效，直到用户删除。
+      （5）、共享：sessionStorage不能共享，localStorage在同源文档之间共享，cookie在同源且符合path规则的文档之间共享。
+      （6）、localStorage的修改会促发其他文档窗口的update事件。
+      （7）、cookie有secure属性要求HTTPS传输。
+      （8）、浏览器不能保存超过300个cookie，单个服务器不能超过20个，每个cookie不能超过4k。web storage大小支持能达到5M。
