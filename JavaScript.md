@@ -117,10 +117,29 @@
 
 + 引起内存泄漏的原因
 
-+ ajax
++ AJAX
+
+    AJAX 可以使网页实现异步更新。
+
+    ```javascript
+    //初始化ajax对象
+    var xhr = new XMLHttpRequest();
+    //连接地址，准备数据
+    xhr.open(“方式”,”地址”,是否为异步);
+    //接收数据完成触发的事件
+    xhr.onreadystatechange =function(){
+        if(xhr===4&&xhr.status===200) {
+            // todo
+        }
+    }
+    //发送数据
+    xhr.send();
+    ```
 
 + map、filter、reduce相关
 
 + Map和Set
 
 + 移动端开发相关
+
++ 数组去重
