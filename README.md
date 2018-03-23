@@ -2,4 +2,4 @@
 
 ## Vue
 
-+ [Vuex](Vue/Vuex.md)
++ [Vuex](Vue/vuex.md)
