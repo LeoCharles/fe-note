@@ -96,6 +96,7 @@
 
 + Vuex 可以在 store 中定义“getter”（可以认为是 store 的计算属性）。getter 的返回值会根据它的依赖被缓存起来，且只有当它的依赖值发生了改变才会被重新计算。
 + Getter 接受 state 作为其第一个参数，也可以接受其他 getter 作为第二个参数。
++ 在组件中通过 this.$store.getters 访问
 + mapGetters 辅助函数将 store 中的 getter 映射到计算属性。
     ```js
     import { mapGetters } from 'vuex'
@@ -136,6 +137,7 @@
         state.count += payload.amount
       }
     }
+    /* 提交mutation */
     store.commit('increment', {
       amount: 10
     })
@@ -184,7 +186,13 @@
       },
       actions: {
         increment (context) {
+          /* 提交一个mutation */
           context.commit('increment')
+          /* 派发action */
+          context.dispatch('add')
+        },
+        add () {
+          console.log('在action中触发'')
         }
       }
     })
