@@ -525,4 +525,68 @@
         }
     }
     ```
-+ assign()：用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
++ Object.assign()：用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
++ Object.assign(): 实行的是浅拷贝，而不是深拷贝，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
+    ```js
+    /* 为对象添加属性 */
+    class Point {
+        constructor(x, y) {
+            Object.assign(this, {x, y})
+        }
+    }
+    /* 为对象添加方法 */
+    Object.assign(SomeClass.prototype, {
+        someMethod(arg1, arg2) {
+            ···
+        },
+        anotherMethod() {
+            ···
+        }
+    })
+    /* 克隆对象 */
+    function clone(origin) {
+        return Object.assign({}, origin)
+    }
+    /* 合并对象 */
+    const merge = (target, ...sources) => Object.assign(target, ...sources)
+    const merge = (...sources) => Object.assign({}, ...sources)
+    ```
+
+### 属性的可枚举性和遍历
+
++ 对象的每个属性都有一个描述对象（Descriptor），用来控制该属性的行为。Object.getOwnPropertyDescriptor方法可以获取该属性的描述对象。
++ 描述对象的enumerable属性，称为“可枚举性”，如果该属性为false，以下操作会忽略当前属性:
+  + for...in循环：只遍历对象自身的和继承的可枚举的属性。
+  + Object.keys()：返回对象自身的所有可枚举的属性的键名。
+  + JSON.stringify()：只串行化对象自身的可枚举的属性。
+  + Object.assign()： 忽略enumerable为false的属性，只拷贝对象自身的可枚举的属性。
++ ES6 规定，所有 Class 的原型的方法都是不可枚举的。
++ 大多数时候，我们只关心对象自身的属性。所以，尽量不要用for...in循环，而用Object.keys()代替。
+
+### Object.setPrototypeOf()，Object.getPrototypeOf() 
+
++ Object.getOwnPropertyDescriptors():返回指定对象所有自身属性（非继承属性）的描述对象。
++ Object.getOwnPropertyDescriptor(): 返回某个对象属性的描述对象（descriptor）。
++ Object.setPrototypeOf(): 作用与__proto__相同，用来设置一个对象的prototype对象，返回参数对象本身。
++ Object.getPrototypeOf(): 与Object.setPrototypeOf方法配套，用于读取一个对象的原型对象。
+
++ super 关键字， 指向当前对象的原型对象。super关键字表示原型对象时，只能用在对象的方法之中，用在其他地方都会报错。
+    ```js
+    const proto = {
+        foo: 'hello'
+    }
+    const obj = {
+        foo: 'world',
+        find() {
+            return super.foo;
+        }
+    }
+    Object.setPrototypeOf(obj, proto);
+    obj.find() // "hello"
+    ```
+
+### Object.keys()，Object.values()，Object.entries()
+
++ Object.keys()：返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
++ Object.values()：返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
++ Object.entries()：返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组。
