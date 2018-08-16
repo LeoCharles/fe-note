@@ -590,3 +590,34 @@
 + Object.keys()：返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
 + Object.values()：返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
 + Object.entries()：返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组。
+
+## Symbol
+
+### 概述
+
++ ES6 引入了一种新的原始数据类型Symbol，表示独一无二的值。Symbol 值通过Symbol函数生成。Symbol函数前不能使用new命令，否则会报错。
++ 它是 JavaScript 语言的第七种数据类型，前六种是：undefined、null、布尔值（Boolean）、字符串（String）、数值（Number）、对象（Object）。
++ 对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的 Symbol 类型。
++ 相同参数的Symbol函数的返回值是不相等的。相同参数的Symbol函数的返回值是不相等的。
+    ```js
+    let s1 = Symbol('a');
+    let s2 = Symbol('a');
+    s1 === s2 // false
+    ```
++ Symbol 值不能与其他类型的值进行运算，会报错。
++ Symbol 值作为对象属性名时，不能用点运算符。
+    ```js
+    let mySymbol = Symbol();
+    /* 第一种写法 */
+    let a = {};
+    a[mySymbol] = 'Hello!';
+    /* 第二种写法 */
+    let a = {
+        [mySymbol]: 'Hello!'
+    };
+    /* 第三种写法 */
+    let a = {};
+    Object.defineProperty(a, mySymbol, { value: 'Hello!' });
+    a[mySymbol] // "Hello!"
+    ```
++ 在对象的内部，使用 Symbol 值定义属性时，Symbol 值必须放在方括号之中。
