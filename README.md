@@ -16,7 +16,7 @@
 
 ## Js库
 
-+ [自定义工具方法](Tool/globalMethods.js)
++ [自定义工具方法](/Tool/utils.js)
 
 ## 杂项
 
