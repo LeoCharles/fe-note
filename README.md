@@ -2,6 +2,8 @@
 
 ## ECMAScript
 
++ [JS基础](ECMAScript/JS基础.md)
+
 + [ES6基础](ECMAScript/ES6基础.md)
 
 ## Utils
