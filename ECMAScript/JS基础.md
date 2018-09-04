@@ -283,6 +283,8 @@ arguments 对象：
 函数作用域:
 
 + 作用域（scope）指的是变量存在的范围。
++ JavaScript 采用词法作用域，也就是静态作用域。函数的作用域在函数定义的时候就决定了。
+
 + Javascript 有三种作用域：
   + 局作用域，变量在整个程序中一直存在，所有地方都可以读取。
   + 函数作用域，变量只在函数内部存在。
@@ -317,6 +319,13 @@ f() // 1
 + 闭包的最大用处有两个：
   + 可以读取函数内部的变量。
   + 可以让这些变量始终保持在内存中，即闭包可以使得它诞生环境一直存在。
+
+JavaScript 执行上下文栈：
+
++ JavaScript 可执行代码分为全局代码、函数代码、eval代码。
++ JavaScript 引擎在执行代码时，会创建执行上下文栈（Execution context stack，ECS）来管理执行上下文。
++ 首先会向执行上下文栈压入一个全局执行上下文（globalContext），并且只有当整个应用程序结束的时候，ECStack 才会被清空，所以程序结束之前， ECStack 最底部永远有个 globalContext。
++ 当执行一个函数的时候，就会创建一个函数执行上下文，并且压入执行上下文栈，当函数执行完毕的时候，就会将函数的执行上下文从栈中弹出。
 
 ### 数据类型转换
 
@@ -805,3 +814,405 @@ var regex = /xyz/i;
 
 ## 面向对象编程
 
+### 构造函数
+
+对象是一个容器，封装了属性（property）和方法（method）。
+
+JavaScript 使用构造函数（constructor）作为对象的模板，专门用来生成实例对象。
+
+构造函数的特点有两个：
+
++ 函数体内部使用了 this 关键字，代表了所要生成的对象实例。
++ 生成对象的时候，必须使用 new 命令。
+
+构造函数之所以叫“构造函数”，就是说这个函数的目的，就是操作一个空对象（即 this 对象），将其“构造”为需要的样子。
+
+new 命令的原理：
+
++ 创建一个新对象，作为将要返回的对象实例。
++ 将构造函数的作用域赋值给新对象（将this指向这个新对象）。
++ 执行构造函数内部的代码。
++ 返回这个新对象。
+
+### this 关键字
+
+JavaScript 语言之中，一切皆对象，运行环境也是对象，所以函数都是在某个对象之中运行，this 就是函数运行时所在的对象（环境）。
+
+JavaScript 支持运行环境动态切换，也就是说，this 的指向是动态的。
+
+this 设计目的就是在函数体内部，指代函数当前的运行环境。
+
+```js
+// 变量 obj 是一个地址。如果要读取 obj.foo，引擎先从 obj 拿到内存地址，再从该地址读出原始的对象，返回它的 foo 属性。
+var obj = { foo:  5 }
+// 原始的对象以字典结构保存，每一个属性名都对应一个属性描述对象
+{
+  foo: {
+    [[value]]: 5
+    [[writable]]: true
+    [[enumerable]]: true
+    [[configurable]]: true
+  }
+}
+
+// 属性的值可能是一个函数
+var obj = { foo: function () {} }
+// 引擎会将函数单独保存在内存中，然后再将函数的地址赋值给foo属性的value属性。
+{
+  foo: {
+    [[value]]: 函数的地址
+    ...
+  }
+}
+// 由于函数是一个单独的值，所以它可以在不同的环境（上下文）执行
+f() // 单独执行
+obj.f() // obj 环境执行
+
+// JavaScript 允许在函数体内部，引用当前环境的其他变量
+// 所以需要有一种机制，能够在函数体内部获得当前的运行环境（context）
+// this 就是在函数体内部，指代函数当前的运行环境。
+var f = function () {
+  console.log(this.x); // 变量 x 由运行环境提供
+}
+var x = 1;
+var obj = {
+  f: f,
+  x: 2,
+};
+// 单独执行， this 指向全局环境
+f() // 1
+// obj 环境执行， this 指向 obj
+obj.f() // 2
+```
+
+this 主要有以下几个使用场合：
+
++ 全局环境中的 this，在浏览器中它指向的就是顶层的 window 对象。
++ 构造函数中的 this，指的是实例对象。
++ 如果对象的方法里面包含 this，this 的指向就是该方法运行时所在的对象（环境）。
+
+```js
+var obj ={
+  foo: function () {
+    console.log(this);
+  }
+};
+obj.foo() // obj
+var f = obj.foo // 将地址 obj.foo 赋值给变量 f
+f() // window 直接取出函数的地址进行调用，运行环境是全局环境， this 指向 window
+// JavaScript 引擎内部，obj 和 obj.foo 储存在两个内存地址，称为地址一和地址二
+// obj.foo()这样调用时，是从地址一调用地址二，因此地址二的运行环境是地址一，this 指向 obj
+// f() 这样调用是直接取出地址二进行调用，这样的话，运行环境就是全局环境，因此 this 指向全局环境
+```
+
+this 使用注意点：
+
++ 由于 this 的指向是不确定的，所以切勿在函数中包含多层的 this。可以定义一个变量固定指向外层的this，在内层使用这个变量。
++ 数组的 map 和 foreach 方法，允许提供一个函数作为参数。这个函数内部不应该使用this。可以将this当作foreach方法的第二个参数，固定它的运行环境。
++ 避免回调函数中的 this。
++ 严格模式下，如果函数内部的this指向顶层对象，就会报错。
+
+绑定 this 的方法：
+
+JavaScript 提供了call、apply、bind 这三个方法，来切换/固定this的指向。
+
+call 方法和 apply 方法：
+
++ 函数实例的 call 方法，可以指定函数内部this的指向（即函数执行时所在的作用域），然后在所指定的作用域中调用该函数。
++ call 方法的参数，应该是一个对象。如果参数为空、null 和 undefined，则默认传入全局对象。
++ call 方法的第一个参数就是this所要指向的那个对象，后面的参数则是函数调用时所需的参数。
++ apply方法的作用与call方法类似，也是改变this指向，然后再调用该函数。唯一的区别就是，它接收一个数组作为函数执行时的参数。
+
+```js
+// call方法应用
+// 类数组转数组
+Array.prototype.slice.call(arrayLike) // 调用数组实例的 slice 方法（类数组对象必须有length属性，以及相对应的数字键）
+
+// apply方法应用
+// 找出数组最大值
+Math.max.apply(null, [10, 2, 4, 15, 9]) // js数组没有提供找出数组最大元素的函数，调用 Math.max 方法实现
+```
+
+bind 方法：
+
++ bind 方法用于将函数体内的this绑定到某个对象，然后返回一个新函数。
++ bind 方法的第一个参数就是所要绑定this的对象，如果bind方法的第一个参数是 null 或 undefined，等于将this绑定到全局对象。
++ bind 方法每运行一次，就返回一个新函数。
+
+### 对象的继承
+
+大部分面向对象的编程语言，都是通过“类”（class）来实现对象的继承，JavaScript 的继承则是通过“原型对象”（prototype）来实现。
+
+JavaScript 规定，所有对象（除了 null ）都有自己的原型对象，任何一个对象，都可以充当其他对象的原型。
+
+原型对象的作用，就是定义所有实例对象共享的属性和方法。实例对象可以视作从原型对象衍生出来的子对象。
+
+创建对象的几种方法：
+
++ 工厂模式
+
+```js
+function creatPerson (name) {
+  var o = new Object();
+  o.name =  name;
+  o.getName = function () {
+    console.log(this.name);
+  };
+  return o;
+}
+var p1 = creatPerson('Tom')
+var p2 = new Person('Bob');
+// 缺点：对象无法识别，因为所有的实例都指向一个原型，都是 Object 对象的实例
+```
+
++ 构造函数模式
+
+```js
+function Person (name) {
+  this.name = name;
+  this.getName = function () {
+    console.log(this.name)
+  };
+}
+var p1 = new Person('Tom');
+var p2 = new Person('Bob');
+p1.getName === p2.getName // false 相同的方法却没有共享，造成浪费
+// 优点：可以识别为一种特特定类型，都是Person的实例
+// 缺点：方法没有复用，造成浪费
+```
+
++ 原型模式
+
+```js
+function Person (name) {
+
+}
+Person.prototype.name = 'Tom'
+Person.prototype.getName = function () {
+  console.log(this.name)
+}
+var p1 = new Person('Tom');
+var p2 = new Person('Bob');
+p1.getName === p2.getName // true 方法共享
+p2.name // "Tom" 属性共享，没有初始化参数
+// 优点：方法会共享不会重复创建
+// 缺点：属性也被共享，不能初始化参数
+```
+
++ 组合模式（结合构造函数和原型模式）
+
+```js
+function Person (name) {
+  this.name = name;
+}
+Person.prototype = {
+  constructor: Person,
+  getName: function () {
+    console.log(this.name);
+  }
+};
+var p1 = new Person('Tom');
+var p2 = new Person('Bob');
+p1.getName === p2.getName // true 方法共享
+p1.name // "Tom"
+p2.name // "Bob" 属性私有
+// 优点：该共享的共享，该私有的私有
+// 缺点：代码没有全部都写在一起，封装性差了一点
+```
+
+原型和原型链：
+
++ 每个函数都有一个 prototype 属性，这个属性指向一个对象，这个对象就是调用该函数而生成的实例对象的原型对象。
++ 每一个对象（除了 null ）都具有一个 __proto__属性，这个属性指向该对象的原型。
++ 原型对象具有 constructor 属性，这个属性指向该原型对象的构造函数。所有实例对象继承了这个属性，因此实例对象可以得知是哪个构造函数产生的。
++ 修改原型对象时，一般要同时修改 constructor 属性的指向。
+
+原型：
+![原型](../img/prototype3.png)
+
++ 原型也是一个对象，原型对象是 Object 构造函数生成，原型对象的__proto__属性指向 Object.prototype。
++ 所有对象都继承了Object.prototype的属性。Object.prototype的原型是null。
++ 关联的原型组成的链状结构就是原型链。
+
+原型链：
+![原型链](../img/prototype5.png)
+
+对象的继承：
+
++ 原型链继承
+
+```js
+// 父类
+function Parent (name) {
+  this.name = name;
+  this.colors = ['red', 'blue'];
+}
+Parent.prototype.getName = function () {
+  console.log(this.name);
+}
+// 子类
+function Child (age) {
+  this.age = age;
+}
+// 修改原型指向实现继承 可以使用 Object.create(Parent.prototype)
+Child.prototype = new Parent();
+Child.prototype.constructor = Child; // 修改原型后要同时修改constructor指向
+var c1 = new Child(20); // 无法传递 name
+var c2 = new Child(30); // 无法传递 name
+c1.colors.push('green'); // 改变 引用类型的属性，会被所有实例共享
+c2.colors // ["red", "blue", "green"] 引用类型的属性 被所有实例共享
+// 缺点：引用类型的属性被所有实例共享，创建子类实例时无法向父类传参
+```
+
++ 借用构造函数继承
+
+```js
+// 父类
+function Parent (name) {
+  this.name = name;
+  this.colors = ['red', 'blue'];
+  this.getName = function () {
+    console.log(this.name)
+  }
+}
+// 子类
+function Child (name, age) {
+  // 调用父类构造函数实现继承
+  Parent.call(this, name); // 子类可以向父类传参
+  this.age = age;
+}
+var c1 = new Child('Tom', 20)
+var c2 = new Child('Bob', 30)
+c1.colors.push('green');
+c2.colors // ["red", "blue"] 引用类型的值不共享
+c1.getName() // Tom
+c2.getName() // Bob
+c1.getName === c2.getName // false 方法没有共享
+// 优点：避免了引用类型的属性被所有实例共享， 子类可以向父类传参
+// 缺点：方法都在构造函数中定义，没有实现共享
+```
+
++ 组合继承（结合原型链继承和构造函数继承）
+
+```js
+// 父类
+function Parent (name) {
+  this.name = name;
+  this.colors = ['red', 'blue'];
+}
+Parent.prototype.getName = function () {
+  console.log(this.name);
+}
+// 子类
+function Child (name, age) {
+  // 调用父类构造函数
+  Parent.call(this, name); // 创建子类实例时第二次调用父类
+  this.age = age;
+}
+// 修改原型指向
+Child.prototype = new Parent(); // 修改子类原型时第一次调用父类
+Child.prototype.constructor = Child; // 修改原型后要同时修改constructor指向
+var c1 = new Child('Tom', 20);
+var c2 = new Child('Bob', 30);
+// 优点：融合原型链继承和构造函数的优点，是最常用的继承模式
+// 缺点：两次调用父类构造函数
+```
+
++ 寄生组合式继承
+
+Object.create() 方法接受一个对象作为参数，然后以它为原型，返回一个实例对象。
+
+```js
+// 父类
+function Parent (name) {
+  this.name = name;
+  this.colors = ['red', 'blue'];
+}
+Parent.prototype.getName = function () {
+  console.log(this.name);
+}
+// 子类
+function Child (name, age) {
+  // 调用父类构造函数
+  Parent.call(this, name); // 创建子类实例时第二次调用父类
+  this.age = age;
+}
+// 使用 Object.create(Parent.prototype) 子类直接访问父类的原型 减少一次父类的调用
+Child.prototype = Object.create(Parent.prototype);
+Child.prototype.constructor = Child;
+var c1 = new Child('Tom', 20);
+var c2 = new Child('Bob', 30);
+
+// 封装成继承函数
+function extend (child, parent) {
+  child.prototype = Object.create(parent.prototype);
+  child.prototype.constructor = child;
+}
+// 使用：
+extend(Child, Parent)
+```
+
+### 模块
+
+模块是实现特定功能的一组属性和方法的封装。
+
++ 封装私有变量
+
+使用“立即执行函数”（IIFE），将相关的属性和方法封装在一个函数作用域里面，可以达到不暴露私有成员的目的。
+
+```js
+var module = (function () {
+  // 私有属性或方法
+  var _count = 0;
+  // 公有属性或方法
+  var p1 = function () {
+    // ...
+  };
+  var p2 = function () {
+    //
+  };
+  // 返回共有属性或方法
+  return {
+    p1: p1,
+    p2: p2
+  }
+})();
+// 外部无法读取私有属性或方法
+```
+
++ 放大模式
+
+如果一个模块很大，必须分成几个部分，或者一个模块需要继承另一个模块，这时就有必要采用“放大模式”（augmentation）。
+
+```js
+var module1 = (function (mod) {
+　//...
+　return mod;
+})(window.module1 || {});
+```
+
++ 输入全局变量
+
+```js
+(function($, window, document) {
+  // 外部无法调用
+  function _go() {}
+
+  function _handleEvents() {}
+
+  function _initialize() {}
+
+  function _dieCarouselDie() {、}
+
+  // finalCarousel 挂载到全局环境
+  window.finalCarousel = {
+    // 暴露对外接口
+    init : _initialize,
+    destroy : _dieCouraselDie
+  }
+})(jQuery, window, document); // 显式地传入全局变量
+
+// 使用
+finalCarousel.init();
+finalCarousel.destroy();
+```
