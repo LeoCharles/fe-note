@@ -1,20 +1,24 @@
 # 前端学习笔记
 
-## ECMAScript
+## HTML
 
-+ [JS基础](ECMAScript/JS基础.md)
+## CSS
 
-+ [ES6基础](ECMAScript/ES6基础.md)
+## JavaScript
 
-## Utils
++ [JS基础](JavaScript/JS基础.md)
 
-+ [自定义工具方法](Utils/globalMethods.js)
++ [ES6基础](JavaScript/ES6基础.md)
 
-## Vue
+## Vue.js
 
 + [Vuex](Vue/vuex.md)
 
-## Notes
+## Js库
+
++ [自定义工具方法](Tool/globalMethods.js)
+
+## 杂项
 
 + [JWT](Notes/JWT.md)
 
