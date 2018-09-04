@@ -1134,7 +1134,7 @@ Parent.prototype.getName = function () {
 // 子类
 function Child (name, age) {
   // 调用父类构造函数
-  Parent.call(this, name); // 创建子类实例时第二次调用父类
+  Parent.call(this, name); // 创建子类实例时调用父类
   this.age = age;
 }
 // 使用 Object.create(Parent.prototype) 子类直接访问父类的原型 减少一次父类的调用
