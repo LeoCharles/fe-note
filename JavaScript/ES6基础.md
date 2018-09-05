@@ -1189,3 +1189,163 @@ let map = new Map([
 [...map]
 // [[1,'one'], [2, 'two'], [3, 'three']]
 ```
+
+## 类和类的继承
+
+### 类
+
+ES6 引入了 Class（类）这个概念，通过 class 关键字，可以定义类。
+
+```js
+// 定义类
+class Point {
+  // 构造方法
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+  }
+  // 静态方法 添加 static
+  static hello() {
+    return 'hello'
+  }
+  // 方法 不需要 function 关键字， 方法之间不能加 逗号
+  toString() {
+    return '(' + this.x + ', ' + this.y + ')'
+  }
+}
+Point.hello() // "hello"
+let p1 = new Point('a', 'b')
+p1.toString() // "(a, b)"
+
+typeof Point // "function"
+Point === Point.prototype.constructor // true
+
+// 添加新的方法
+Object.assign(Point.prototype, {
+  toValue(){}
+});
+```
+
+上面代码定义了一个“类”，可以看到里面有一个 constructor 方法，这就是构造方法，而 this 关键字则代表实例对象。
+
+还定义了一个 toString 方法。注意，定义“类”的方法的时候，前面不需要加上 function 这个关键字，方法之间不需要逗号分隔，加了会报错。
+
+类的内部所有定义的方法，都是不可枚举的（non-enumerable）。
+
+类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上 static 关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
+
+类的数据类型就是函数，类本身就指向构造函数。
+
+使用的时候，也是直接对 类 使用 new  命令，跟构造函数的用法完全一致。
+
+利用 Symbol 值的唯一性，将私有方法的名字命名为一个 Symbol 值。
+
+与 ES5 一样，在“类”的内部可以使用 get 和 set 关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
+
+### 类的继承
+
+Class 可以通过 extends 关键字实现继承。子类必须在 constructor 方法中调用 super 方法，否则新建实例时会报错。
+
+因为子类自己的 this 对象，必须先通过父类的构造函数完成塑造，得到与父类同样的实例属性和方法，然后再对其进行加工，加上子类自己的实例属性和方法。
+
+如果不调用 super 方法，子类就得不到 this 对象。
+
+在子类的构造函数中，只有调用super之后，才可以使用 this 关键字，否则会报错。
+
+如果子类没有定义 constructor 方法，这个方法会被默认添加，不管有没有显式定义，任何一个子类都有 constructor 方法。
+
+父类的静态方法，也会被子类继承。
+
+```js
+class Point {
+  // ...
+}
+// 通过 extends 继承
+class ColorPoint extends Point {
+  constructor(x, y, color) {
+    // 调用父类的 constructor(x, y)
+    super(x, y)
+    this.color = color;
+  }
+
+  toString() {
+    return this.color + ' ' + super.toString() // 调用父类的toString()
+  }
+}
+
+```
+
+上面代码中，constructor 方法和 toString 方法之中，都出现了 super 关键字，它在这里表示父类的构造函数，用来新建父类的this对象。
+
+ES5 的继承，实质是先创造子类的实例对象this，然后再将父类的方法添加到 this 上面（Parent.call(this)）。
+
+ES6 的继承机制完全不同，实质是先将父类实例对象的属性和方法，加到 this 上面（所以必须先调用super方法），然后再用子类的构造函数修改 this。
+
+super 关键字:
+
+super 作为函数调用时，代表父类的构造函数。只能用在子类的构造函数之中，用在其他地方就会报错。
+
+super 作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
+
+## Module 模块
+
+模块功能主要由两个命令构成：export 和 import。
+
+export 命令用于规定模块的对外接口。
+
+export 命令除了输出变量，还可以输出函数或类（class）。
+
+export 命令输出的变量就是本来的名字，但是可以使用 as 关键字重命名。
+
+export default 命令，为模块指定默认输出。
+
+```js
+export function f() {}
+
+function v1() { ... }
+function v2() { ... }
+
+export {
+  v1 as streamV1,
+  v2 as streamV2,
+  v2 as streamLatestVersion
+};
+export default function () {
+  console.log('foo');
+}
+```
+
+import 命令用于输入其他模块提供的功能。
+
+import 命令要使用as关键字，将输入的变量重命名。
+
+用星号（*）指定一个对象，所有输出值都加载在这个对象上面。
+
+```js
+// 重命名
+import { foo as f } from './aaa.js';
+// 加载需要的方法
+import { area, circumference } from './circle';
+// 整体加载
+import * as circle from './circle';
+console.log('圆面积：' + circle.area(4));
+console.log('圆周长：' + circle.circumference(14));
+```
+
+如果在一个模块之中，先输入后输出同一个模块，import语句可以与export语句写在一起。
+
+```js
+export { foo, bar } from 'my_module';
+// 可以简单理解为
+import { foo, bar } from 'my_module';
+export { foo, bar };
+
+// 接口改名
+export { foo as myFoo } from 'my_module';
+
+// 整体输出
+export * from 'my_module';
+
+// 默认接口
+export { default } from 'foo';
+```
