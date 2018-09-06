@@ -10,13 +10,15 @@
 
 + [ES6基础](JavaScript/ES6基础.md)
 
++ [Promise](JavaScript/Promise.md)
+
 ## Vue.js
 
 + [Vuex](Vue/vuex.md)
 
 ## Js库
 
-+ [自定义工具方法](/Tool/utils.js)
++ [自定义工具方法](/Lib/utils.js)
 
 ## 杂项
 
