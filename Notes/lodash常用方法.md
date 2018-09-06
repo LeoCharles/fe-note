@@ -31,8 +31,6 @@ _.compact([0, 1, false, 2, '', 3])// => [1, 2, 3]
 ## Collection 集合方法
 
 
-
-
 ## Util 工具方法
 
 ### _.times(n, func)

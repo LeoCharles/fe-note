@@ -16,6 +16,10 @@
 
 + [Vuex](Vue/vuex.md)
 
+## 小程序
+
++ [微信小程序](MP/微信小程序.md)
+
 ## Js库
 
 + [自定义工具方法](/Lib/utils.js)
