@@ -24,6 +24,6 @@
 
 + [JWT](Notes/JWT.md)
 
-+ [算法](Notes/算法.md)
++ [排序算法](Notes/排序.md)
 
 + [Vue项目移动页面真机调试](Notes/Vue项目移动页面真机调试.md)
