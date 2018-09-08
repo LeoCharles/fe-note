@@ -8,6 +8,10 @@
 
 + [JS基础](JavaScript/JS基础.md)
 
++ [DOM](JavaScript/DOM.md)
+
++ [Browser](JavaScript/Browser.md)
+
 + [ES6基础](JavaScript/ES6基础.md)
 
 + [Promise](JavaScript/Promise.md)
