@@ -1,6 +1,8 @@
 # Vue 框架原理
 
 + [MVVM框架](#MVVM)
++ [前端路由原理](#前端路由原理)
++ [虚拟DOM](#虚拟dom)
 
 ## MVVM
 
@@ -14,7 +16,7 @@ MVVM 由以下三个内容组成：
 
 Vue 通过数据劫持实现数据双向绑定。
 
-## 数据劫持
+### 数据劫持
 
 Vue 内部使用了 Object.defineProperty() 来实现双向绑定，通过设定对象属性的 setter/getter 方法来监听数据的变化，通过 getter 进行依赖收集，而每个 setter 方法就是一个观察者，在数据变更的时候通知订阅者更新视图。
 
@@ -47,27 +49,27 @@ function defineReactive(obj, key, val) {
   })
 }
 
-// 绑定数据
-let data = { name: 'leo' }
+// js
+let data = { name: 'Leo' }
 observe(data)
 let name = data.name; // get value
 data.name = 'Tom'; // set value
 ```
 
-以上代码简单的实现了如何监听数据的 set 和 get 的事件，但是仅仅如此是不够的，还需要在适当的时候给属性添加发布订阅。
+以上代码简单的实现了如何监听数据的 set 和 get 的事件，但是仅仅如此是不够的，还需要在适当的时候给属性添加订阅。
 
 ```js
-// 发布订阅器
+// 订阅器
 class Dep {
   constructor() {
-    // 用来收集观察者实例
+    // 用来收集订阅者实例
     this.subs = []
   }
-  // 添加观察者实例
+  // 添加订阅者实例
   addSub(sub) {
     this.subs.push(sub)
   }
-  // 通知所有观察者更新视图
+  // 通知所有订阅者更新视图
   notify() {
     this.subs.forEach(sub => {
       sub.update()
@@ -100,17 +102,17 @@ class Watcher {
     this.cb(this.value)
   }
 }
-// 对 defineReactive 函数进行改造
+// 对 defineReactive 函数进行改造 给属性添加监听
 function defineReactive(obj, key, val) {
   observe(val)
-  // 为为每个属性创建 发布订阅器 实例
+  // 为每个属性创建 订阅器 实例
   let dep = new Dep()
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       console.log('get value')
-      // 将观察者实例添加到订阅器
+      // 将观察者实例添加到订阅器，观察者实例也就变成了订阅者
       if (Dep.target) {
         dep.addSub(Dep.target)
       }
@@ -119,9 +121,47 @@ function defineReactive(obj, key, val) {
     set: function reactiveSetter (newVal) {
       console.log('set value')
       val = newVal
-      // 数据改变时 通过订阅器通知所有的观察者更新视图
+      // 数据改变时 通过订阅器通知所有的订阅者(观察者)更新视图
       dep.notify()
     }
   })
 }
+
+// html
+<div>
+    {{name}}
+</div>
+// js
+var data = { name: 'Leo' }
+observe(data)
+// 模拟解析到 `{{name}}` 触发的操作
+new Watcher(data, 'name', update)
+// update Dom innerText
+data.name = 'Tom'
 ```
+
+以上实现了一个简易的双向绑定，核心思路就是手动触发一次属性的 getter 来实现发布订阅的添加。
+
+### Vue 数据绑定的实现
+
+![Vue数据绑定](/img/shujvbangding.png)
+
++ Observer 数据劫持，能够对数据对象的所有属性进行劫持并添加订阅，如有变动可拿到最新值并通知订阅者。
++ Compile 指令解析器，它的作用对每个元素节点的指令进行扫描和解析，根据指令模板替换数据，以及绑定相应的更新函数。
++ Watcher 观察者(也是订阅者)， 作为连接 Observer 和 Compile 的桥梁，能够订阅并收到每个属性变动的通知，执行指令绑定的相应回调函数。
++ Dep 消息订阅器，内部维护了一个数组，用来收集订阅者（Watcher），数据变动触发 notify 函数，通知所有的订阅者(观察者)调用 update 方法。
+
+### Proxy 与 Object.defineProperty 对比
+
+Object.defineProperty 虽然已经能够实现双向绑定了，但是他还是有缺陷的：
+
++ 只能对属性进行数据劫持，所以需要深度遍历整个对象
++ 对于数组不能监听到数据的变化
+
+虽然 Vue 中确实能检测到数组数据的变化，但是其实是使用了 hack 的办法，并且也是有缺陷的。
+
+Proxy 就没以上的问题，原生支持监听数组变化，并且可以直接对整个对象进行拦截
+
+## 前端路由原理
+
+## 虚拟DOM
