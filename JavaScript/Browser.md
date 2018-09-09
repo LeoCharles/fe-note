@@ -143,6 +143,10 @@ CORS 是跨源资源共享。它允许浏览器向跨域的服务器，发出 XM
 
 服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。
 
+### Server Proxy
+
+通过服务端代理请求的方式也是解决浏览器跨域问题的方案。同源策略只是针对浏览器的安全策略，服务端并不受同源策略的限制，也就不存在跨域的问题。
+
 ### window.postMessage
 
 window.postMessage(message, targetOrigin) 方法是 HTML5 新引进的特性，用于页面之间跨域通信。
