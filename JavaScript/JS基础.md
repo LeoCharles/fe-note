@@ -412,7 +412,7 @@ function $isEmpty (val) {
 
 ### Object
 
-JavaScript 的所有其他对象都继承自 Object 对象，即那些对象都是 Object 对象的实例。
+JavaScript 的所有其他对象都继承自 Object 对象，即所有对象都是 Object 对象的实例。
 
 Object 对象本身是一个函数，可以当作工具方法使用，将任意值转为对象。
 
@@ -929,7 +929,7 @@ f() // window 直接取出函数的地址进行调用，运行环境是全局环
 this 使用注意点：
 
 + 由于 this 的指向是不确定的，所以切勿在函数中包含多层的 this。可以定义一个变量固定指向外层的this，在内层使用这个变量。
-+ 数组的 map 和 foreach 方法，允许提供一个函数作为参数。这个函数内部不应该使用this。可以将this当作foreach方法的第二个参数，固定它的运行环境。
++ 数组的 map 和 forEach 方法，允许提供一个函数作为参数。这个函数内部不应该使用this。可以将this当作forEach方法的第二个参数，固定它的运行环境。
 + 避免回调函数中的 this。
 + 严格模式下，如果函数内部的this指向顶层对象，就会报错。
 

@@ -253,6 +253,8 @@ service worker 也称服务工作线程，是浏览器在后台独立网页运�
 
 ## 事件循环
 
++ [阮一峰《再谈Event Loop》](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)
+
 JavaScript 是门非阻塞单线程语言，单线程指的是，JavaScript 只在一个线程上运行。也就是说，JavaScript 同时只能执行一个任务，其他任务都必须在后面排队等待。（JavaScript 引擎有多个线程，单个脚本只能在一个线程上运行（称为主线程），其他线程都是在后台配合）。
 
 程序里面所有的任务，可以分成两类：同步任务和异步任务。
