@@ -146,12 +146,12 @@ data.name = 'Tom'
 
 ![Vue数据绑定](/img/shujvbangding.png)
 
-+ Observer 数据劫持，能够对数据对象的所有属性进行劫持并添加订阅，如有变动可拿到最新值并通知订阅者。
-+ Compile 指令解析器，它的作用对每个元素节点的指令进行扫描和解析，根据指令模板替换数据，以及绑定相应的更新函数。
-+ Watcher 观察者(也是订阅者)， 作为连接 Observer 和 Compile 的桥梁，能够订阅并收到每个属性变动的通知，执行指令绑定的相应回调函数。
++ Observer 数据劫持，用 Object.defineProperty() 重写数据的get、set，值更新时就在 set 中通知订阅者更新数据。
++ Compile 模板编译器，深度遍历 DOM 树，对每个元素节点的指令模板进行替换数据以及订阅数据。
++ Watcher 观察者(也是订阅者)， 作为连接 Observer 和 Compile 的桥梁，能够订阅并收到每个属性变动的通知，执行指令绑定的相应回调函数，从而更新视图。
 + Dep 消息订阅器，内部维护了一个数组，用来收集订阅者（Watcher），数据变动触发 notify 函数，通知所有的订阅者(观察者)调用 update 方法。
 
-当执行 new Vue() 时，Vue 就进入了初始化阶段，一方面 Vue 会遍历 data 选项中的属性，并用 Observerr 实现数据变化监听功能；另一方面，Vue 的指令编译器 Compile 对元素节点的指令进行扫描和解析，初始化视图，并订阅 Watcher 来更新视图，此时Wather 会将自己添加到消息订阅器中 Dep，初始化完毕。当数据发生变化时，Observer 中的 setter 方法被触发，setter 会立即调用 Dep.notify()，订阅者收到通知后对视图进行相应的更新。
+当执行 new Vue() 时，Vue 就进入了初始化阶段，一方面 Vue 会遍历 data 选项中的属性，并用 Observer 实现数据变化监听功能；另一方面，Vue 的模板编译器 Compile 对元素节点的指令进行扫描和解析，初始化视图，并订阅 Watcher 来更新视图，此时Wather 会将自己添加到消息订阅器中 Dep，初始化完毕。当数据发生变化时，Observer 中的 setter 方法被触发，setter 会立即调用 Dep.notify()，订阅者收到通知后对视图进行相应的更新。
 
 ### Proxy 与 Object.defineProperty 对比
 
