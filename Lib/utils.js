@@ -221,7 +221,6 @@ function $throttle(fn, wait = 100) {
   }
 }
 
-
 /**
  * 函数防抖
  */
@@ -234,3 +233,25 @@ function $debounce(fn, delay = 100) {
     }, delay)
   }
 }
+
+/**
+ *  微信小程序异步函数转成 promise
+ */
+ const promisify = original => {
+  return function(opt) {
+    return new Promise((resolve, reject) => {
+      opt = Object.assign({
+        success: resolve,
+        fail: reject
+      }, opt)
+      original(opt)
+    })
+  }
+}
+  /* 示例
+  promisify(wx.getStorage)({key: 'key'}).then(res => {
+    // success
+  }).catch(err => {
+      // fail
+  })
+ */
