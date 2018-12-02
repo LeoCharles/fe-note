@@ -1,20 +1,22 @@
 # 前端学习笔记
 
-## HTML
-
-## CSS
-
 ## JavaScript
 
 + [JS基础](JavaScript/JS基础.md)
 
-+ [DOM](JavaScript/DOM.md)
-
-+ [Browser](JavaScript/Browser.md)
-
 + [ES6基础](JavaScript/ES6基础.md)
 
 + [Promise](JavaScript/Promise.md)
+
+## Browser
+
++ [Browser](Browser/Browser.md)
+
++ [DOM](Browser/DOM.md)
+
++ [EventTarget](Browser/EventTarget.md)
+
+## Web API
 
 ## Vue.js
 
@@ -28,11 +30,11 @@
 
 + [微信小程序](MP/微信小程序.md)
 
-## Js库
+## JS工具库
 
 + [自定义工具方法](/Lib/utils.js)
 
-## 杂项
+## 笔记
 
 + [网络](Notes/网络.md)
 
