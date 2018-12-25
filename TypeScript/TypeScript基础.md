@@ -327,7 +327,7 @@ function push(array: any[], ...items:any[]) {
 }
 ```
 
-## 类类与接口
+## 类与接口
 
 类的相关概念：
 
