@@ -30,6 +30,8 @@
 
 ## TypeScript
 
++ [TypeScript基础](TypeScript/TypeScript基础.md)
+
 ## 微信
 
 + [微信小程序](WX/微信小程序.md)
@@ -38,7 +40,7 @@
 
 ## JS工具库
 
-+ [自定义工具方法](/Lib/utils.js)
++ [自定义工具方法](Lib/utils.js)
 
 ## 笔记
 
