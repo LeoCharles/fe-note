@@ -1,7 +1,7 @@
 # React 基础
 
-+ [JSX](#JSX)
-+ [元素渲染](#元素渲染)
+- [JSX](#JSX)
+- [元素渲染](#元素渲染)
 
 ## JSX
 
@@ -23,42 +23,34 @@ Babel 转译器会把 JXS 转换成一个名为 `React.createElement()` 的方�
 
 ```jsx
 function formatName(user) {
-  return user.firstName + '' + user.lastName;
+  return user.firstName + "" + user.lastName;
 }
 function getGreeting(user) {
   if (user) {
-    return <h1>hello, {formatName(user)}!</h1>
+    return <h1>hello, {formatName(user)}!</h1>;
   } else {
-    return <h1>hello, stranger!</h1>
+    return <h1>hello, stranger!</h1>;
   }
 }
 const user = {
-  firstName: 'Leo',
-  lastName: 'Charles'
+  firstName: "Leo",
+  lastName: "Charles"
 };
-const element = (
-  <h1>
-    hello, {formatName(user)}!
-  </h1>
-);
-ReactDOM.render(element, document.getElementById('root'));
+const element = <h1>hello, {formatName(user)}!</h1>;
+ReactDOM.render(element, document.getElementById("root"));
 
 // 以字符串为值得属性
-const tabElement = <div tabIndex="0"></div>
+const tabElement = <div tabIndex="0" />;
 // 以 JavaScript 表达式为值的属性
-const imgElement = <img src={user.avatarUrl}/>
+const imgElement = <img src={user.avatarUrl} />;
 
-const element = (
-  <h1 className="greeting">
-    hello, world
-  </h1>
-)
+const element = <h1 className="greeting">hello, world</h1>;
 // 等价于
 const element = React.createElement(
-  'h1',
-  {className: 'greeting'},
-  'hello, world'
-)
+  "h1",
+  { className: "greeting" },
+  "hello, world"
+);
 ```
 
 ## 元素渲染
