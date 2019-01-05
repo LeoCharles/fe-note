@@ -234,6 +234,23 @@ function $debounce(fn, delay = 100) {
   }
 }
 
+/*
+* 扁平对象转为树形对象，parent字段为空字符串的节点为根节点
+*/
+function plain2Tree(obj) {
+  let key = null
+  let res = {}
+  for (key in obj) {
+    const parent = obj[key].parent
+    if (parent === '') {
+      res = obj[key]
+    } else {
+      obj[parent][key] = obj[key]
+    }
+  }
+  return res
+}
+
 /**
  *  微信小程序异步函数转成 promise
  */
