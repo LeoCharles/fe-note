@@ -251,6 +251,120 @@ function plain2Tree(obj) {
   return res
 }
 
+// todo
+var data = [
+  {
+    province: "浙江",
+    city: "杭州",
+    name: "西湖",
+    area: 'A区'
+  },
+  {
+    province: "四川",
+    city: "成都",
+    name: "锦里",
+    area: 'D区'
+  },
+  {
+    province: "四川",
+    city: "成都",
+    name: "方所",
+    area: 'B区'
+  },
+  {
+    province: "四川",
+    city: "阿坝",
+    name: "九寨沟",
+    area: 'C区'
+  }
+];
+
+var data = [
+  {
+    value: "浙江",
+    children: [
+      { value: "杭州", children: [{ value: "西湖", children: [{ value: "A区" }] }] }
+    ]
+  },
+  {
+    value: "四川",
+    children: [
+      {
+        value: "成都",
+        children: [
+          { value: "锦里", children: [{ value: "D区" }] },
+          { value: "方所", children: [{ value: "B区" }] }
+        ]
+      },
+      { value: "阿坝", children: [{ value: "九寨沟", children: [{ value: "C区" }] }] }
+    ]
+  }
+];
+
+// 把一个树形结构，变成扁平化列表
+function toFlat(tree, [key, ...rest], result = {}) {
+  if (result[key] == null) {
+    result[key] = tree.value;
+  } else if (result[key] !== tree.value) {
+    result = {
+      ...result,
+      [key]: tree.value
+    };
+  }
+  return rest.length ? toFlatList(tree.children, rest, result) : [result];
+}
+
+// 把一个树形结构的列表，变成扁平化列表
+function toFlatList(treeList, keys, result = {}) {
+  return treeList.reduce(
+    (list, tree) => list.concat(toFlat(tree, keys, result)),
+    []
+  );
+}
+
+// 转换树形结构为列表结构
+function treeToList(treeList = [], keys) {
+  return toFlatList(treeList, keys);
+}
+
+var result = treeToList(data, ["province", "city", "name", "area"]);
+console.log("result", result);
+
+// 将一个扁平对象，根据 keys 树形化
+function toTree(obj, [key, ...rest], result = {}) {
+    if (result.value == null) {
+        result.value = obj[key]
+        if (rest.length) {
+            result.children = toTreeList(obj, rest)
+        }
+    } else if (result.value === obj[key] && rest.length) {
+        toTreeList(obj, rest, result.children)
+    }
+    return result
+}
+
+// 将一个扁平对象的树形化产物，不重复地放到 list 里
+function toTreeList(obj, keys, list = []) {
+    let value = obj[keys[0]]
+    let target = list.find(item => item.value === value)
+    if (target) {
+        toTree(obj, keys, target)
+    } else {
+        list.push(toTree(obj, keys))
+    }
+    return list
+}
+
+// 将一个扁平化对象组成的列表，变成树形化的列表
+function listToTree(list=[], keys=[]) {
+    return list.reduce(
+        (result, obj) => toTreeList(obj, keys, result),
+        []
+    )
+}
+
+console.log('result', listToTree(data, ['province', 'city', 'name', 'area']))
+
 /**
  *  微信小程序异步函数转成 promise
  */
