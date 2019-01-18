@@ -46,11 +46,24 @@ function $generateUniqueId() {
 }
 
 /**
+ * 生成随机字符串
+ */
+function $randomStr() {
+  const $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+  const maxPos = $chars.length
+  let str = ''
+  for (let i = 0; i < len; i++) {
+    str += $chars.charAt(Math.floor(Math.random() * maxPos))
+  }
+  return str
+}
+
+/**
  * 对象数组去重
  */
 
 function $unique(array) {
-  var obj = {}
+  let obj = {}
   return array.filter(function (item, index, array) {
     return obj.hasOwnProperty(typeof item + JSON.stringify(item)) ? false : (obj[typeof item + JSON.stringify(item)] = true)
   })
@@ -61,7 +74,7 @@ function $unique(array) {
  */
 
 function $uniqueBy(array, key) {
-  var obj = {}
+  let obj = {}
   return array.reduce(function (item, next) {
     obj[next[key]] ? '' : obj[next[key]] = true && item.push(next)
     return item
@@ -150,7 +163,6 @@ function $formatRemainTime(endTime) {
   return d + "天 " + h + "小时 " + m + "分钟 " + s + "秒"
 }
 
-
 /**
  *  url 参数转对象
  */
@@ -162,7 +174,6 @@ function $parseQueryString(url) {
   }
   return JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
 }
-
 
 
 /**
