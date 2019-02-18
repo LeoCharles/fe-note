@@ -2,7 +2,11 @@
 
 + [JSX](#JSX)
 + [组件](#组件)
++ [组件生命周期](#组件生命周期)
 + [事件处理](#事件处理)
++ [条件渲染和列表渲染](#条件渲染和列表渲染)
++ [表单](#表单)
++ [状态提升](#状态提升)
 
 ## JSX
 
@@ -127,15 +131,45 @@ class Clock extends Component {
 }
 ```
 
+## 组将生命周期
+
+### 装载
+
++ `constructor()`
+
++ `static getDerivedStateFromProps()`
+
++ `render()`
+
++ `componentDidMount()`
+
+### 更新
+
++ `static getDerivedStateFromProps()`
+
++ `shouldComponentUpdate()`
+
++ `render()`
+
++ `getSnapshotBeforeUpdate()`
+
++ `componentDidUpdate()`
+
+### 卸载
+
++ `componentWillUnmount()`
+
 ## 事件处理
 
 React 事件绑定属性的命名采用驼峰式写法，而不是小写
 
 采用 JSX 的语法需要传入一个函数作为事件处理函数，而不是一个字符串
 
-不能使用返回 ``false` 的方式阻止默认行为，必须明确的使用 `preventDefault`
+不能使用返回 `false` 的方式阻止默认行为，必须明确的使用 `preventDefault`
 
-类的方法默认不会绑定 `this`，需要手动绑定 `this`
+类的方法默认不会绑定 `this`，需要手动绑定 `this`，可以通过箭头函数和 `bind()`
+
+使用箭头函数传参时，需要显式传递事件对象 `e`
 
 ```jsx
 // HTML 中属性名不用驼峰命名
@@ -147,28 +181,163 @@ class Toggle  extends Component {
     this.state = {
       isToggleOn: true
     }
-    // 绑定 this
-    this.handleClick = this.handleClick.bind(this)
   }
-  // 回调函数
-  handleClick() {
+  // 事件对象 e 被隐式传递
+  handleToggle(msg, e) {
+    // 使用 e.preventDefault() 阻止默认行为
+    e.preventDefault()
     this.setState(prevState => ({
       isToggleOn: !prevState.isToggleOn
     }))
+    alert(msg)
   }
-  // 或者
-  // handleClick = () => {
-  //   this.setState(prevState => ({
-  //     isToggleOn: !prevState.isToggleOn
-  //   }))
-  // }
+  // 事件对象 e 要放在参数最后
+  handleClick(msg, e) {
+    e.preventDefault()
+    alert(msg)
+  }
+  // 使用属性初始化语法绑定 this
+  handleClickMe = (e) => {
+    e.preventDefault()
+    console.log(this)
+  }
   render() {
     return (
-      // 采用驼峰命名
-      <button onClick={this.handleClick}>
+      // 使用 bind 绑定 this ,事件对象 e 会被隐式传递
+      <button onClick={this.handleToggle.bind(this, 'toggle!')}>
         {this.state.isToggleOn ? 'On' : 'Off'}
       </button>
+      // 使用属性初始化语法绑定 this ,事件对象 e 会被隐式传递
+      <button onClick={this.handleClickMe}>click me</button>
+      // 使用箭头函数(可能有性能问题)需要显式传递 事件对象 e
+      <button onClick={(e) => this.handleClick('click!', e)}>click</button>
     );
   }
 }
 ```
+
+## 条件渲染和列表渲染
+
+React 中的条件渲染和 JavaScript 中的一致，使用 `if` 或`条件运算符`来创建表示当前状态的元素
+
+`true && expression` 总是返回 `expression`，而 `false && expression` 总是返回 `false`，如果条件是 `true`，`&&` 右侧的元素就会被渲染，如果是 `false`，React 会忽略
+
+使用 `map()` 函数渲染列表，给每个列表元素分配一个 `key`
+
+```jsx
+class LoginControl extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      isLoggedIn: false
+    }
+  }
+  handleLogoutClick = () => {
+    this.setState({isLoggedIn: false})
+  }
+  handleLogInClick = () => {
+    this.setState({isLoggedIn: true})
+  }
+  render() {
+    const isLoggedIn = this.state.isLoggedIn
+    let button = null
+    // 条件渲染
+    if (isLoggedIn) {
+      button = <button onClick={this.handleLogoutClick}>Logout</button>
+    } else {
+      button = <button onClick={this.handleLogInClick}>Login</button>
+    }
+    return (
+      <div>
+        {button}
+      </div>
+    );
+  }
+}
+// 使用 map 渲染列表
+function NumberList(props) {
+  const numbers = props.numbers;
+  return (
+    <ul>
+      {numbers.map((number) =>
+        <ListItem key={number.toString()} value={number} />
+      )}
+    </ul>
+  );
+}
+```
+
+## 表单
+
+在 HTML 当中，像 `<input>`，`<textarea>`，和 `<select>`这类表单元素会维持自身状态，并根据用户输入进行更新
+
+但在 React 中，可变的状态通常保存在组件的状态属性中，并且只能用 `setState()` 方法进行更新
+
+在表单元素上将 `value`设置为 `state` 状态的值，按键触发 `change` 事件，在处理函数中 使用 `setState()` 改变 `state` 状态的值，成为受控组件
+
+在HTML当中，`<input type="file">` 标签的 value 属性是只读的， 所以它是 React 中的一个非受控组件
+
+```jsx
+class Form extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      name: '',
+      password: '',
+      gender: ''
+    }
+  }
+  handleInputChange(e) {
+    const target = e.target
+    const name = target.name
+    const value = target.value
+    this.setState({
+     [name]: value
+    })
+  }
+  handleSubmit(e) {
+    e.preventDefault()
+    const {name, password, gender} = this.state
+    console.log(name, password, gender)
+  }
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit.bind(this)}>
+        <label>name:
+          <input
+            type="text"
+            name="name"
+            value={this.state.name}
+            onChange={this.handleInputChange.bind(this)} />
+        </label>
+        <label>password:
+          <input
+            type="password"
+            name="password"
+            value={this.state.password}
+            onChange={this.handleInputChange.bind(this)} />
+        </label>
+        <label>male:
+          <input
+            type="radio"
+            name="gender"
+            value="male"
+            onChange={this.handleInputChange.bind(this)}/>
+        </label>
+        <label>female
+          <input
+            type="radio"
+            name="gender"
+            value="female"
+            onChange={this.handleInputChange.bind(this)}/>
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    )
+  }
+}
+```
+
+## 状态提升
+
+使用 React 中几个组件要共用状态数据时，将这部分共享的状态提升至他们最近的父组件中进行管理
