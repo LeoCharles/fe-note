@@ -137,27 +137,47 @@ class Clock extends Component {
 
 + `constructor()`
 
+  组件的构造函数将会在其装载之前被调用，构造函数用于两个目的：初始化状态、绑定事件处理方法
+
+  如果不初始化状态，也不绑定方法，就不需要为组件实现构造函数
+
 + `static getDerivedStateFromProps()`
+
+  组件实例化后和接受新属性时将会调用
 
 + `render()`
 
 + `componentDidMount()`
 
+  组件被装载后调用，可以在这里发送网络请求，初始化 DOM 节点
+
 ### 更新
 
 + `static getDerivedStateFromProps()`
 
+  组件实例化后和接受新属性时将会调用
+
 + `shouldComponentUpdate()`
+
+  当接收到新属性或状态时，在渲染前被调用，默认为 `true`
 
 + `render()`
 
 + `getSnapshotBeforeUpdate()`
 
+  最新的渲染输出提交给DOM前将会立即调用，这一生命周期返回的任何值将会 作为参数被传递给`componentDidUpdate()`
+
 + `componentDidUpdate()`
+
+  在更新发生后调用，对于初次的渲染，该方法并不会调用
+
+  可以立即调用 `setState()`，但是要注意 必须把它包裹在一个条件中，否则你将引发一个无限循环
 
 ### 卸载
 
 + `componentWillUnmount()`
+
+  组件被卸载和销毁之前调用，可以在这里处理必要的清理工作，例如解绑定时器，取消网络请求
 
 ## 事件处理
 
