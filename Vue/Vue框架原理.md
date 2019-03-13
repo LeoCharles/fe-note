@@ -1,16 +1,16 @@
 # Vue 框架原理
 
-+ [MVVM框架](#MVVM)
-+ [前端路由原理](#前端路由原理)
-+ [虚拟DOM](#虚拟dom)
+- [MVVM 框架](#MVVM)
+- [前端路由原理](#前端路由原理)
+- [虚拟 DOM](#虚拟dom)
 
 ## MVVM
 
 MVVM 由以下三个内容组成：
 
-+ View：视图
-+ Model：数据模型
-+ ViewModel；负责沟通 View 和 Model 的桥梁。
+- View：视图
+- Model：数据模型
+- ViewModel；负责沟通 View 和 Model 的桥梁
 
 在 MVVM 中，最核心的就是数据的双向绑定。视图通过数据驱动，数据一旦改变就会刷新视图。如果视图发生改变，也会改变对应的数据。这样就可以在业务处理中只关心数据的流转，不要直接操作 DOM。
 
@@ -38,11 +38,11 @@ function defineReactive(obj, key, val) {
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
-    get: function reactiveGetter () {
+    get: function reactiveGetter() {
       console.log('get value')
       return val
     },
-    set: function reactiveSetter (newVal) {
+    set: function reactiveSetter(newVal) {
       console.log('set value')
       val = newVal
     }
@@ -52,8 +52,8 @@ function defineReactive(obj, key, val) {
 // js
 let data = { name: 'Leo' }
 observe(data)
-let name = data.name; // get value
-data.name = 'Tom'; // set value
+let name = data.name // get value
+data.name = 'Tom' // set value
 ```
 
 以上代码简单的实现了如何监听数据的 set 和 get 的事件，但是仅仅如此是不够的，还需要在适当的时候给属性添加订阅。
@@ -93,7 +93,7 @@ class Watcher {
     this.obj = obj
     this.key = key
     this.value = obj[key]
-    Dep.target =  null
+    Dep.target = null
   }
   update() {
     // 获取新值
@@ -110,7 +110,7 @@ function defineReactive(obj, key, val) {
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
-    get: function reactiveGetter () {
+    get: function reactiveGetter() {
       console.log('get value')
       // 将观察者实例添加到订阅器，观察者实例也就变成了订阅者
       if (Dep.target) {
@@ -118,7 +118,7 @@ function defineReactive(obj, key, val) {
       }
       return val
     },
-    set: function reactiveSetter (newVal) {
+    set: function reactiveSetter(newVal) {
       console.log('set value')
       val = newVal
       // 数据改变时 通过订阅器通知所有的订阅者(观察者)更新视图
@@ -128,9 +128,7 @@ function defineReactive(obj, key, val) {
 }
 
 // html
-<div>
-    {{name}}
-</div>
+;<div>{{ name }}</div>
 // js
 var data = { name: 'Leo' }
 observe(data)
@@ -146,19 +144,19 @@ data.name = 'Tom'
 
 ![Vue数据绑定](/img/shujvbangding.png)
 
-+ Observer 数据劫持，用 Object.defineProperty() 重写数据的get、set，值更新时就在 set 中通知订阅者更新数据。
-+ Compile 模板编译器，深度遍历 DOM 树，对每个元素节点的指令模板进行替换数据以及订阅数据。
-+ Watcher 观察者(也是订阅者)， 作为连接 Observer 和 Compile 的桥梁，能够订阅并收到每个属性变动的通知，执行指令绑定的相应回调函数，从而更新视图。
-+ Dep 消息订阅器，内部维护了一个数组，用来收集订阅者（Watcher），数据变动触发 notify 函数，通知所有的订阅者(观察者)调用 update 方法。
+- Observer 数据劫持，用 Object.defineProperty() 重写数据的 get、set，值更新时就在 set 中通知订阅者更新数据。
+- Compile 模板编译器，深度遍历 DOM 树，对每个元素节点的指令模板进行替换数据以及订阅数据。
+- Watcher 观察者(也是订阅者)， 作为连接 Observer 和 Compile 的桥梁，能够订阅并收到每个属性变动的通知，执行指令绑定的相应回调函数，从而更新视图。
+- Dep 消息订阅器，内部维护了一个数组，用来收集订阅者（Watcher），数据变动触发 notify 函数，通知所有的订阅者(观察者)调用 update 方法。
 
-当执行 new Vue() 时，Vue 就进入了初始化阶段，一方面 Vue 会遍历 data 选项中的属性，并用 Observer 实现数据变化监听功能；另一方面，Vue 的模板编译器 Compile 对元素节点的指令进行扫描和解析，初始化视图，并订阅 Watcher 来更新视图，此时Wather 会将自己添加到消息订阅器中 Dep，初始化完毕。当数据发生变化时，Observer 中的 setter 方法被触发，setter 会立即调用 Dep.notify()，订阅者收到通知后对视图进行相应的更新。
+当执行 new Vue() 时，Vue 就进入了初始化阶段，一方面 Vue 会遍历 data 选项中的属性，并用 Observer 实现数据变化监听功能；另一方面，Vue 的模板编译器 Compile 对元素节点的指令进行扫描和解析，初始化视图，并订阅 Watcher 来更新视图，此时 Wather 会将自己添加到消息订阅器中 Dep，初始化完毕。当数据发生变化时，Observer 中的 setter 方法被触发，setter 会立即调用 Dep.notify()，订阅者收到通知后对视图进行相应的更新。
 
 ### Proxy 与 Object.defineProperty 对比
 
 Object.defineProperty 虽然已经能够实现双向绑定了，但是他还是有缺陷的：
 
-+ 只能对属性进行数据劫持，所以需要深度遍历整个对象
-+ 对于数组不能监听到数据的变化
+- 只能对属性进行数据劫持，所以需要深度遍历整个对象
+- 对于数组不能监听到数据的变化
 
 虽然 Vue 中确实能检测到数组数据的变化，但是其实是使用了 hack 的办法，并且也是有缺陷的。
 
@@ -170,8 +168,8 @@ Proxy 就没以上的问题，原生支持监听数组变化，并且可以直�
 
 目前实现的方式有两种：
 
-+ hash 模式
-+ history 模式
+- hash 模式
+- history 模式
 
 ### hash 模式
 
@@ -187,7 +185,7 @@ history 模式是 HTML5 新推出的功能，比之 Hash URL 更加美观。通�
 
 ![history模式](/img/history.png)
 
-## 虚拟DOM
+## 虚拟 DOM
 
 操作 DOM 是很耗费性能的一件事情，因此可以考虑通过 JS 对象来模拟 DOM 对象，帮助我们更高效的操作 DOM。
 
@@ -205,7 +203,7 @@ export default class VNode {
    * @param {Array}  children 子节点 [ vnode1, 'text']
    * @param {String} key option
    * */
-  constructor (tag, props, children, key) {
+  constructor(tag, props, children, key) {
     this.tag = tag
     this.props = props
     if (Array.isArray(children)) {
@@ -217,17 +215,22 @@ export default class VNode {
     if (key) this.key = key
   }
   // 渲染函数
-  render () {
-    let root = this._createElement(this.tag, this.props, this.children, this.key)
+  render() {
+    let root = this._createElement(
+      this.tag,
+      this.props,
+      this.children,
+      this.key
+    )
     document.body.appendChild(root)
     return root
   }
   // 初始化
-  create () {
+  create() {
     return this._createElement(this.tag, this.props, this.children, this.key)
   }
   // 创建 DOM 节点
-  _createElement (tag, props, child, key) {
+  _createElement(tag, props, child, key) {
     // 通过 tag 创建节点
     let el = document.createElement(tag)
     // 设置节点属性
@@ -271,31 +274,31 @@ DOM 是多叉树的结构，如果需要完整的对比两颗树的差异，那�
 
 实现 O(n) 复杂度的关键就是只对比同层的节点，而不是跨层对比。判断差异的 diff 算法就分为了两步：
 
-+ 首先从上至下，从左往右遍历对象，也就是树的深度遍历，这一步中会给每个节点添加索引，便于最后渲染差异
-+ 一旦节点有子元素，就去判断子元素是否有不同
+- 首先从上至下，从左往右遍历对象，也就是树的深度遍历，这一步中会给每个节点添加索引，便于最后渲染差异
+- 一旦节点有子元素，就去判断子元素是否有不同
 
 树的递归：
 
 首先我们来实现树的递归算法，在实现该算法前，先来考虑下两个节点对比会有几种情况：
 
-+ 新的节点的 tagName 或者 key 和旧的不同，这种情况代表需要替换旧的节点，并且也不再需要遍历新旧节点的子元素了，因为整个旧节点都被删掉了
-+ 新的节点的 tagName 和 key（可能都没有）和旧的相同，开始遍历子树
-+ 没有新的节点，那么什么都不用做
+- 新的节点的 tagName 或者 key 和旧的不同，这种情况代表需要替换旧的节点，并且也不再需要遍历新旧节点的子元素了，因为整个旧节点都被删掉了
+- 新的节点的 tagName 和 key（可能都没有）和旧的相同，开始遍历子树
+- 没有新的节点，那么什么都不用做
 
 判断属性的更改：
 
 判断属性的更改也分三个步骤：
 
-+ 遍历旧的属性列表，查看每个属性是否还存在于新的属性列表中
-+ 遍历新的属性列表，判断两个列表中都存在的属性的值是否有变化
-+ 在第二步中同时查看是否有属性不存在与旧的属性列列表中
+- 遍历旧的属性列表，查看每个属性是否还存在于新的属性列表中
+- 遍历新的属性列表，判断两个列表中都存在的属性的值是否有变化
+- 在第二步中同时查看是否有属性不存在与旧的属性列列表中
 
 判断列表差异：
 
 这个算法是整个 Virtual Dom 中最核心的算法，这里的主要步骤其实和判断属性差异是类似的，也是分为三步：
 
-+ 遍历旧的节点列表，查看每个节点是否还存在于新的节点列表中
-+ 遍历新的节点列表，判断是否有新的节点
-+ 在第二步中同时判断节点是否有移动
+- 遍历旧的节点列表，查看每个节点是否还存在于新的节点列表中
+- 遍历新的节点列表，判断是否有新的节点
+- 在第二步中同时判断节点是否有移动
 
 该算法只对有 key 的节点做处理。
