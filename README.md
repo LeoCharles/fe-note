@@ -51,7 +51,7 @@
 
 ## 工具库
 
-- [工具方法](Lib/utils.js)
+- [工具方法](Tool/utils.js)
 
 ## 笔记
 
