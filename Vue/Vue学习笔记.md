@@ -905,3 +905,302 @@ const AsyncComponent = () => ({
   timeout: 3000
 })
 ```
+
+### 处理边界情况
+
+在每个 `new Vue` 实例的子组件中，其根实例可以通过 `$root` 属性进行访问。
+
+根实例中：
+
+```js
+// Vue 根实例
+new Vue({
+  data: {
+    foo: 1
+  },
+  computed: {
+    bar: function() {}
+  },
+  methods: {
+    baz: function() {}
+  }
+})
+```
+
+所有的子组件都可以将这个实例作为一个全局 `store` 来访问或使用。
+
+```js
+// 获取根组件的数据
+this.$root.foo
+
+// 写入根组件的数据
+this.$root.foo = 2
+
+// 访问根组件的计算属性
+this.$root.bar
+
+// 调用根组件的方法
+this.$root.baz()
+```
+
+和 `$root` 类似，`$parent` 属性可以用来从一个子组件访问父组件的实例。
+
+可以通过 `ref` 特性为子组件赋予一个 ID 引用，使用 `$refs` 来访问。
+
+`provide` 选项允许我们指定我们想要提供给后代组件的数据/方法。
+
+然后在任何后代组件里，我们都可以使用 `inject` 选项来接收。
+
+## 可复用性和组合
+
+### 混入(mixins)
+
+混入 (mixins) 是一种分发 Vue 组件中可复用功能的一种方式，混入对象可以包含任意组件选项。
+
+当组件使用混入对象时，所有混入对象的选项将被混入该组件本身的选项。
+
+当组件和混入对象含有同名选项时，这些选项将以恰当的方式混合。
+
+`data` 对象在内部会进行递归合并，在和组件的数据发生冲突时以组件数据优先。
+
+同名钩子函数将混合为一个数组，都将被调用，混入对象的钩子将在组件自身钩子之前调用。
+
+值为对象的选项，例如 `methods`, `components` 和 `directives`，将被混合为同一个对象。两个对象键名冲突时，取组件对象的键值对。
+
+`Vue.extend()` 也使用同样的策略进行合并。
+
+### 自定义指令
+
+代码复用和抽象的主要形式是组件。然而，当需要对普通 DOM 元素进行底层操作，这时候就会用到自定义指令。
+
+```js
+// 注册一个全局自定义指令 `v-focus`
+Vue.directive('focus', {
+  // 当被绑定的元素插入到 DOM 中时
+  inserted: function(el) {
+    // 聚焦元素
+    el.focus()
+  }
+})
+
+// 组件中也接受一个 directives 的选项
+directives: {
+  focus: {
+    // 指令的定义
+    inserted: function (el) {
+      el.focus()
+    }
+  }
+}
+```
+
+一个指令定义对象可以提供如下几个钩子函数 (均为可选)：
+
+- `bind`：只调用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置。
+
+- `inserted`：被绑定元素插入父节点时调用 (仅保证父节点存在，但不一定已被插入文档中)。
+
+- `update`：所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前。指令的值可能发生了改变，也可能没有。但是你可以通过比较更新前后的值来忽略不必要的模板更新 (详细的钩子函数参数见下)。
+
+- `componentUpdated`：指令所在组件的 VNode 及其子 VNode 全部更新后调用。
+
+- `unbind`：只调用一次，指令与元素解绑时调用。
+
+指令钩子函数会被传入以下参数:
+
+- `el`：指令所绑定的元素，可以用来直接操作 DOM 。
+- `binding`：一个对象，包含以下属性：
+  - `name`：指令名，不包括 v- 前缀。
+  - `value`：指令的绑定值，例如：v-my-directive="1 + 1" 中，绑定值为 2。
+  - `oldValue`：指令绑定的前一个值，仅在 update 和 componentUpdated 钩子中可用。无论值是否改变都可用。
+  - `expression`：字符串形式的指令表达式。例如 v-my-directive="1 + 1" 中，表达式为 "1 + 1"。
+  - `arg`：传给指令的参数，可选。例如 v-my-directive:foo 中，参数为 "foo"。
+  - `modifiers`：一个包含修饰符的对象。例如：v-my-directive.foo.bar 中，修饰符对象为 { foo: true, bar: true }。
+- `vnode`：Vue 编译生成的虚拟节点。移步 VNode API 来了解更多详情。
+- `oldVnode`：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用。
+
+### render 函数
+
+Vue 推荐在绝大多数情况下使用 `template` 来创建你的 HTML。
+
+也可以用 `render` 函数，它比 `template` 更接近编译器。
+
+Vue 通过建立一个`虚拟 DOM` 对真实 `DOM` 发生的变化保持追踪。
+
+`<h1>{{ blogTitle }}</h1>`
+
+```js
+render: function (createElement) {
+  return createElement('h1', this.blogTitle)
+}
+```
+
+`createElement` 接受的参数:
+
+```js
+// @returns {VNode}
+createElement(
+  // {String | Object | Function}
+  // 一个 HTML 标签字符串，组件选项对象，或者
+  // 解析上述任何一种的一个 async 异步函数。必需参数。
+  'div',
+
+  // {Object}
+  // 一个包含模板相关属性的数据对象
+  // 你可以在 template 中使用这些特性。可选参数。
+  {
+    // ( VNode 数据对象)
+  },
+
+  // {String | Array}
+  // 子虚拟节点 (VNodes)，由 `createElement()` 构建而成，
+  // 也可以使用字符串来生成“文本虚拟节点”。可选参数。
+  [
+    '先写一些文字',
+    createElement('h1', '一则头条'),
+    createElement(MyComponent, {
+      props: {
+        someProp: 'foobar'
+      }
+    })
+  ]
+)
+```
+
+`VNode` 数据对象
+
+```js
+{
+  // 和`v-bind:class`一样的 API
+  // 接收一个字符串、对象或字符串和对象组成的数组
+  'class': {
+    foo: true,
+    bar: false
+  },
+  // 和`v-bind:style`一样的 API
+  // 接收一个字符串、对象或对象组成的数组
+  style: {
+    color: 'red',
+    fontSize: '14px'
+  },
+  // 普通的 HTML 特性
+  attrs: {
+    id: 'foo'
+  },
+  // 组件 props
+  props: {
+    myProp: 'bar'
+  },
+  // DOM 属性
+  domProps: {
+    innerHTML: 'baz'
+  },
+  // 事件监听器基于 `on`
+  // 所以不再支持如 `v-on:keyup.enter` 修饰器
+  // 需要手动匹配 keyCode。
+  on: {
+    click: this.clickHandler
+  },
+  // 仅用于组件，用于监听原生事件，而不是组件内部使用
+  // `vm.$emit` 触发的事件。
+  nativeOn: {
+    click: this.nativeClickHandler
+  },
+  // 自定义指令。注意，你无法对 `binding` 中的 `oldValue`
+  // 赋值，因为 Vue 已经自动为你进行了同步。
+  directives: [
+    {
+      name: 'my-custom-directive',
+      value: '2',
+      expression: '1 + 1',
+      arg: 'foo',
+      modifiers: {
+        bar: true
+      }
+    }
+  ],
+  // 作用域插槽格式
+  // { name: props => VNode | Array<VNode> }
+  scopedSlots: {
+    default: props => createElement('span', props.text)
+  },
+  // 如果组件是其他组件的子组件，需为插槽指定名称
+  slot: 'name-of-slot',
+  // 其他特殊顶层属性
+  key: 'myKey',
+  ref: 'myRef',
+  // 如果你在渲染函数中向多个元素都应用了相同的 ref 名，
+  // 那么 `$refs.myRef` 会变成一个数组。
+  refInFor: true
+}
+```
+
+### 插件
+
+Vue.js 的插件应该有一个公开方法 `install`。这个方法的第一个参数是 Vue 构造器，第二个参数是一个可选的选项对象。
+
+```js
+MyPlugin.install = function (Vue, options) {
+  // 1. 添加全局方法或属性
+  Vue.myGlobalMethod = function () {
+    // 逻辑...
+  }
+
+  // 2. 添加全局资源
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 3. 注入组件
+  Vue.mixin({
+    created: function () {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 4. 添加实例方法
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // 逻辑...
+  }
+}
+```
+
+通过全局方法 `Vue.use()` 使用插件。它需要在你调用 `new Vue()` 启动应用之前完成
+
+### 过滤器
+
+Vue.js 允许你自定义过滤器，可被用于一些常见的文本格式化。过滤器可以用在两个地方：双花括号插值和 `v-bind` 表达式
+
+```html
+<!-- 在双花括号中 -->
+{{ message | capitalize }}
+
+<!-- 在 `v-bind` 中 -->
+<div v-bind:id="rawId | formatId"></div>
+```
+
+可以在一个组件的选项中定义本地的过滤器，也可以在创建 Vue 实例之前全局定义过滤器
+
+```js
+filters: {
+  capitalize: function (value) {
+    if (!value) return ''
+    value = value.toString()
+    return value.charAt(0).toUpperCase() + value.slice(1)
+  }
+}
+
+Vue.filter('capitalize', function (value) {
+  if (!value) return ''
+  value = value.toString()
+  return value.charAt(0).toUpperCase() + value.slice(1)
+})
+```
+
+过滤器函数总接收表达式的值 (之前的操作链的结果) 作为第一个参数。
+
+过滤器可以串联：`{{ message | filterA | filterB }}`
