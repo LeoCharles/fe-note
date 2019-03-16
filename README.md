@@ -25,6 +25,7 @@
 
 ## Vue
 
+- [Vue 学习笔记](Vue/Vue学习笔记.md)
 - [Vue 框架原理](Vue/Vue框架原理.md)
 - [Vue 最佳实践](Vue/Vue最佳实践.md)
 - [Vuex](Vue/vuex.md)
