@@ -7,9 +7,9 @@ JSX 是可选的，我们可以直接用 `React.createElment` 来构建组件的
 一个包含子元素的例子：
 
 ```js
-  var child = React.createElement('li', null, 'Text Contnt');
-  var root = React.createElement('ul', {className: 'my-list'}, child);
-  React.render(root, document.body);
+var child = React.createElement('li', null, 'Text Contnt')
+var root = React.createElement('ul', { className: 'my-list' }, child)
+React.render(root, document.body)
 ```
 
 利用 JSX 编写 DOM 结构，可以用原生的 HTML 标签，也可以直接像普通标签一样引用 React 组件
@@ -36,23 +36,23 @@ HTML 里的 `class` 在 JSX 里要写成 `className`，因为 `class` 在 JS 里
 
 组件生命周期：
 
-+ `componentWillMount` (不安全，下个大版本将移除)
+- `componentWillMount` (不安全，下个大版本将移除)
 
   在 `render` 之前调用，在挂载之前调用一次，可以在这个方法里调用 `setState` 改变状态
 
-+ `componentDidMount`
+- `componentDidMount`
 
   在 `render` 之后调用，在挂载之后调用一次，从这里开始可以通过 `ReactDOM.findDOMNode` 方法获取组件的 DOM 节点
 
-+ `componentWillReceiveProps`
+- `componentWillReceiveProps`
 
-+ `shouldComponentUpdate`
+- `shouldComponentUpdate`
 
-+ `componentWillUpdate`
+- `componentWillUpdate`
 
-+ `componentDidUpdate`
+- `componentDidUpdate`
 
-+ `componentWillUnmount`
+- `componentWillUnmount`
 
 React 里面绑定事件的方式和在 HTML 中绑定事件类似，使用驼峰式命名，注意要显式调用 `bind(this)` 将事件函数上下文绑定要组件实例上
 
