@@ -280,4 +280,36 @@ Node.js 提供了多种流对象。 例如，`HTTP 服务器的请求`和 `proce
 
 大多数 `fs` 操作接受的文件路径可以指定为字符串、`Buffer`、或使用 `file:` 协议的 `URL` 对象。
 
-常用方法：
+### 常用方法：
+
++ `fs.stat(path[, options], callback)`： 异步获取文件信息。
+  + `path <string> | <Buffer> | <URL>` 文件的路径。
+  + `options <Object>`
+    + `bigint <boolean>` 返回的 `fs.Stats` 对象中的数值是否应为 bigint 型。默认值: false。
+  + `callback <Function>`
+    + `err <Error>`
+    + `stats <fs.Stats>`
+
+  `fs.stat(path)` 执行后，会将 `stats` 类的实例返回给其回调函数。可以通过 `stats` 类中的提供方法判断文件的相关属性。
+
+  + `stats.isFile()`： 是否为文件。
+  + `stats.isDirectory()`： 是否为目录。
+
++ `fs.open(path, flags[, mode], callback)`： 异步地打开文件。
+  + `path <string> | <Buffer> | <URL>` 文件的路径。
+  + `flags <string> | <number>` 文件打开的行为标志。
+  + `mode <integer>` 设置文件模式(权限)，文件创建默认权限为 0666(可读，可写)。
+  + `callback <Function>` 回调函数，带有两个参数。
+    + `err <Error>`
+    + `fd <integer>`
+
++ `fs.read(fd, buffer, offset, length, position, callback)`： 从 fd 指定的文件中读取数据。
+  + `fd <integer>` 通过 `fs.open()` 方法返回的文件描述符。
+  + `buffer <Buffer> | <TypedArray> | <DataView>` 数据写入的缓冲区。
+  + `offset <integer>` 缓冲区写入的写入偏移量。
+  + `length <integer>` 要从文件中读取的字节数。
+  + `position <integer>` 文件读取的起始位置，如果 position 的值为 null，则会从当前文件指针的位置读取。
+  + `callback <Function>` 回调函数。
+    + `err <Error>` 错误信息。
+    + `bytesRead <integer>` 表示读取的字节数。
+    + `buffer <Buffer>` 缓冲区对象。
