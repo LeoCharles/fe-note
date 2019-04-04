@@ -626,11 +626,16 @@ console.log(urlObj.hash); // #hash
 
 + `path.relative(from, to)`： 将相对路径转为绝对路径。
 
+### dns（域名服务器）
 
-### dns
+`dns` 模块包含两类函数：
 
-### domain
+第一类函数，使用底层操作系统工具进行域名解析，且无需进行网络通信。
 
-### net
+第二类函数，连接到真实的 DNS 服务器进行域名解析，且始终使用网络进行 DNS 查询。
+
+### domain（域）
+
+### net（网络）
 
 ## http
