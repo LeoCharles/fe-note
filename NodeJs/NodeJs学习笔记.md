@@ -270,7 +270,7 @@ Node.js 提供了多种流对象。 例如，`HTTP 服务器的请求`和 `proce
 
 + `transform.destroy([error])`：销毁流，并触发 'error' 事件。
 
-## 文件系统
+## fs（文件系统）
 
 所有文件系统操作都具有同步和异步的形式。
 
@@ -313,3 +313,324 @@ Node.js 提供了多种流对象。 例如，`HTTP 服务器的请求`和 `proce
     + `err <Error>` 错误信息。
     + `bytesRead <integer>` 表示读取的字节数。
     + `buffer <Buffer>` 缓冲区对象。
+
++ `fs.writeFile(file, data[, options], callback)`： 异步地将数据写入到一个文件，如果文件已存在则覆盖该文件。
+  + `file <string> | <Buffer> | <URL> | <integer>` 文件名或文件描述符。
+  + `data <string> | <Buffer> | <TypedArray> | <DataView>` 要写入文件的数据。
+  + `options <Object> | <string>`
+    + `encoding <string> | <null>` 默认值: 'utf8'。
+    + `mode <integer>` 默认值: 0o666。
+    + `flag <string>` 参阅支持的文件系统标志。默认值: 'w'。
+  + `callback <Function>` 回调函数。
+    + `err <Error>` 错误信息。
+
+```js
+const fs = require('fs')
+fs.writeFile('test.txt', '这是通过写入的文件内容', (err) => {
+  if (err) console.log(err);
+  console.log('写入成功');
+  fs.readFile('test.txt', (err, data) => {
+    if (err) console.log(err)
+    console.log('读取文件数据：' + data.toString());;
+  })
+})
+// 写入成功
+// 读取文件数据：这是通过写入的文件内容
+```
+
++ `fs.write(fd, string[, position[, encoding]], callback)`： 将 string 写入到 fd 指定的文件。
+  + `fd <integer>` 文件描述符。
+  + `string <string>`  如果 string 不是一个字符串，则该值会被强制转换为字符串。
+  + `position <integer>` 指定文件开头的偏移量（数据应该被写入的位置）。
+  + `encoding <string>` 字符串编码，默认值: 'utf8'。
+  + `callback <Function>` 回调函数
+    + `err <Error>` 错误信息。
+    + `written <integer>` 指定传入的字符串中被要求写入的字节数。
+    + `string <string>`
+
+```js
+const fs = require('fs')
+fs.open('test.txt', 'r+', (err, fd) => {
+  if (err) console.log(err);
+  fs.write(fd, 'hello world!', (err, written, string) => {
+    console.log(written);
+    console.log(string);
+  })
+})
+// 12
+// hello world!
+```
+
++ `fs.close(fd, callback)`： 关闭文件。
+
++ `fs.ftruncate(fd[, len], callback)`： 截取文件。
+  + `fd <integer>` 文件描述符。
+  + `len` 文件内容截取的长度，默认值是 0。
+  + `callback <Function>` 回调函数。
+    + `err <Error>` 错误信息。
+
++ `fs.unlink(path, callback)`： 删除文件。
+  + `path <string> | <Buffer> | <URL>` 文件路径。
+  + `callback <Function>` 回调函数。
+    + `err <Error>` 错误信息。
+
++ `fs.mkdir(path[, options], callback)`： 创建目录。
+  + `path <string> | <Buffer> | <URL>` 文件路径。
+  + `options <Object> | <string>`
+    + `recursive <boolean>` 默认值: false。
+    + `mode <integer>`  设置目录权限，Windows 上不支持。默认值: 0o777。
+  + `callback <Function>` 回调函数。
+    + `err <Error>` 错误信息。
+
++ `fs.readdir(path[, options], callback)`： 读取目录的内容。 
+  + `path <string> | <Buffer> | <URL>` 文件路径。
+  + `options <Object> | <string>`
+    + `encoding <string>` 字符串编码，默认值: 'utf8'。
+    + `withFileTypes <boolean>` 默认值: false。
+  + `callback <Function>` 回调函数。
+    + `err <Error>` 错误信息。
+    + `files <string[]> | <Buffer[]> | <fs.Dirent[]>`
+
++ `fs.rmdir(path, callback)`： 删除目录。
+  + `path <string> | <Buffer> | <URL>` 文件路径。
+  + `callback <Function>` 回调函数。
+    + `err <Error>` 错误信息。
+
+## url
+
+`url` 模块用于处理与解析 URL。
+
+URL 字符串是结构化的字符串，包含多个含义不同的组成部分。 解析字符串后返回的 URL 对象，每个属性对应字符串的各个组成部分。
+
+`url` 模块提供了两套 API 来处理 URL：一个是实现了 WHATWG 标准的新 API，一个是旧版本遗留的 API。
+
+### URL 类 (v6.13.0)
+
+浏览器兼容的 URL 类，根据 WHATWG URL 标准实现。
+
++ `new URL(input[, base])`：过将 input 解析到 base 上创建一个新的 URL 对象。
+  + `input <string>` 要解析的输入 URL。
+  + `base <string> | <URL>` 如果 input 是相对 URL，则为要解析的基本 URL。
+
++ `url.href`： 获取及设置序列化的 URL。
+
++ `url.username`： 获取及设置 URL 的用户名(username)部分。
+
++ `url.password`： 获取及设置 URL 的密码(password)部分。
+
++ `url.origin`： 获取只读序列化的 URL origin 部分。
+
++ `url.protocol`： 获取及设置 URL 的协议(protocol)部分。
+
++ `url.host`： 获取及设置 URL 的主机(host)部分。包含端口。
+
++ `url.hostname`： 获取及设置 URL 的主机名(hostname)部分。 不包含端口。
+
++ `url.port`： 获取及设置 URL 的端口(port)部分。
+
++ `url.pathname`： 获取及设置 URL 的路径(path)部分。
+
++ `url.search`： 获取及设置 URL 的序列化查询(query)部分部分。
+
++ `url.searchParams`： 获取表示 URL 查询参数的 URLSearchParams 对象。
+
++ `url.hash`： 获取及设置 URL 的分段(hash)部分。
+
++ `url.toString()`： 返回序列化的 URL。返回值与 `url.href` 和 `url.toJSON()` 的相同。
+
++ `url.toJSON()`： 返回序列化的 URL。返回值与 `url.href` 和 `url.toJSON()` 的相同。
+
+```js
+const { URL } = require('url')
+const str = 'http://user:pass@sub.example.com:8080/p/a/t/h?aa=11&bb=22#hash'
+const myURL = new URL(str)
+console.log(myURL.href); // http://user:pass@sub.example.com:8080/p/a/t/h?aa=11&bb=22#hash
+console.log(myURL.username); // user
+console.log(myURL.password); // pass
+console.log(myURL.origin); // http://sub.example.com:8080
+console.log(myURL.protocol); // http:
+console.log(myURL.host); // sub.example.com:8080
+console.log(myURL.hostname); // sub.example.com
+console.log(myURL.port); // 8080
+console.log(myURL.pathname); // /p/a/t/h
+console.log(myURL.search); // ?aa=11&bb=22
+console.log(myURL.searchParams); // URLSearchParams { 'aa' => '11', 'bb' => '22' }
+console.log(myURL.hash); // #hash
+```
+
+### URLSearchParams 类
+
+`URLSearchParams` API接口提供对 `URL` query 部分的读写权限。
+
+`URLSearchParams` 接口和 `querystring` 模块有相似的目的，但是 `querystring` 模块的目的更加通用，因为它可以定制分隔符（＆和=）。
+
++ `new URLSearchParams()`：实例化一个新的URLSearchParams 对象。
+
+如果参数为字符串且以 `?` 打头，则 `?`将会被忽略。
+
+```js
+const { URLSearchParams } = require('url')
+const param1 = new URLSearchParams('user=abc&query=xyz')
+console.log(param1.toString()); // user=abc&query=xyz
+console.log(param1.get('user')); // abc
+
+const param2 = new URLSearchParams({
+  user: 'abc',
+  query: ['first', 'second']
+});
+console.log(param2.toString()); // user=abc&query=first%2Csecond
+console.log(param2.getAll('query')); // [ 'first,second' ]
+
+const param3 = new URLSearchParams([
+  ['user', 'abc'],
+  ['query', 'first'],
+  ['query', 'second']
+]);
+console.log(param3.toString()); // user=abc&query=first&query=second
+console.log(param3.has('user')); // true
+```
+
++ `urlSearchParams.has(name)`： 如果存在至少一对键是name的键值对则返回 true。
+
++ `urlSearchParams.get(name)`： 返回键是 name 的第一个键值对的值。如果没有，则返回null。
+
++ `urlSearchParams.getAll(name)`：返回键是 name 的所有键值对的值，如果没有，则返回一个空的数组。
+
++ `urlSearchParams.append(name, value)`： 在查询字符串中附加一个新的键值对。
+
++ `urlSearchParams.delete(name)`： 删除所有键为name的键值对。
+
++ `urlSearchParams.keys()`：在每一个键值对上返回一个键的 ES6 迭代器。
+
++ `urlSearchParams.values(name)`： 在每一个键值对上返回一个值的 ES6 迭代器。
+
++ `urlSearchParams.entries()`： 返回一个 `[name, value]` 迭代器。
+
++ `urlSearchParams.forEach(fn[, thisArg])`： 在查询字符串中迭代每个键值对，并调用给定的函数。
+
++ `urlSearchParams.toString()`： 返回查询参数序列化后的字符串，必要时存在百分号编码字符。
+
++ `urlSearchParams.set(name, value)`： 将 URLSearchParams 对象中与 name 相对应的值设置为 value。如果已经存在键为 name 的键值对，将第一对的值设为 value 并且删除其他对。如果不存在，则将此键值对附加在查询字符串后。
+
+```js
+const { URL } = require('url');
+const myURL = new URL('https://example.org/?a=b&c=d');
+myURL.searchParams.forEach((value, name, searchParams) => {
+  console.log(name, value, myURL.searchParams === searchParams);
+});
+// a b true
+// c d true
+```
+
+### 遗留的 URL 接口
+
+遗留的 `urlObject` (require('url').Url)由 `url.parse()` 函数创建并返回。
+
++ `url.parse(urlString[, parseQueryString[, slashesDenoteHost]])`： 解析 URL 字符串并返回 URL 对象。
+  + `urlString <string>` 要解析的 URL 字符串。
+  + `parseQueryString <boolean>` 如果设为 true，则返回的 URL 对象的 query 属性会是一个使用 querystring 模块的 parse() 生成的对象。 如果设为 false，则 query 会是一个未解析未解码的字符串。 默认为 false。
+  + `slashesDenoteHost <boolean>`  默认为 false。
+
++ `url.format(urlObject)`： 返回一个从 urlObject 格式化后的 URL 字符串。
+
++ `url.resolve(from, to)`： 把一个目标 URL 解析成相对于一个基础 URL。
+
++ `urlObject.href`： href 属性是解析后的完整的 URL 字符串， protocol 和 host 都会被转换为小写的。
+
++ `urlObject.auth`： auth 属性是 URL 的用户名与密码部分。
+
++ `urlObject.protocol`： protocol 属性表明 URL 的小写的协议体制。
+
++ `urlObject.host`： host 属性是 URL 的完整的小写的主机部分，包括 port（如果有）。
+
++ `urlObject.hostname`： hostname 属性是 host 组成部分排除 port 之后的小写的主机名部分。
+
++ `urlObject.port`： port 属性是 host 组成部分中的数值型的端口部分。
+
++ `urlObject.path`： path 属性是一个 pathname 与 search 组成部分的串接。
+
++ `urlObject.pathname`： pathname 属性包含 URL 的整个路径部分。
+
++ `urlObject.query`： query 属性是不含开头问号 `?` 的查询字符串。
+
++ `urlObject.search`：search 属性包含 URL 的整个查询字符串部分，包括开头的问号字符 `?`。
+
++ `urlObject.hash`：hash 属性包含 URL 的碎片部分，包括开头的哈希字符 `#`。
+
+```js
+const url = require('url')
+const str = 'http://user:pass@sub.example.com:8080/p/a/t/h?aa=11&bb=22#hash'
+const urlObj = url.parse(str)
+console.log(urlObj.href); // http://user:pass@sub.example.com:8080/p/a/t/h?aa=11&bb=22#hash
+console.log(urlObj.auth); // user:pass
+console.log(urlObj.protocol); // http:
+console.log(urlObj.host); // sub.example.com:8080
+console.log(urlObj.hostname); // sub.example.com
+console.log(urlObj.port); // 8080
+console.log(urlObj.path); // /p/a/t/h?aa=11&bb=22
+console.log(urlObj.pathname); // /p/a/t/h
+console.log(urlObj.search); // ?aa=11&bb=22
+console.log(urlObj.query); // aa=11&bb=22
+console.log(urlObj.hash); // #hash
+```
+
+## 工具模块
+
+### os
+
+`os` 模块提供了操作系统相关的实用方法。
+
++ `os.EOL`: 一个字符串常量，定义操作系统相关的行末标志，`\n` 在 POSIX 系统上 `\r\n` 在 Windows 系统上
+
++ `os.arch()`： 操作系统CPU架构，能的值有: 'arm'，'arm64'，'ia32'，'mips'，'mipsel'，'ppc'，'ppc64'，'s390'，'s390x'，'x32'，'x64'。
+
++ `os.type()`： 操作系统的名字，能的值有: 'Linux' ，'Darwin'，'Windows_NT'。
+
++ `os.platform()`： 操作系统平台，能的值有: 'aix'，'darwin'，'freebsd'，'linux'，'openbsd'，'sunos'，'win32'。
+
++ `os.release()`： 操作系统的发行版本。
+
++ `os.hostname()`:  操作系统的主机名。
+
++ `os.totalmem()`： 系统内存总量，单位为字节。
+
++ `os.freemem()`：操作系统空闲内存量，单位是字节。
+
++ `os.cpus()`:  返回一个对象数组, 包含每个逻辑 CPU 内核的信息。
+
++ `os.tmpdir()`： 返回操作系统的默认临时文件夹。
+
++ `os.networkInterfaces()`：获得网络接口列表。
+
+### path
+
+`path` 模块提供用于处理文件路径和目录路径的实用工具。
+
++ `path.parse(path)`： 返回路径字符串的对象。
+
++ `path.format(pathObject)`： 从对象中返回路径字符串，和 `path.parse` 相反。
+
++ `path.normalize(path)`： 规范化路径。
+
++ `path.dirname(path)`： 返回路径中代表文件夹的部分。
+
++ `path.basename(path[, ext])`： 返回路径中的最后一部分。
+
++ `path.extname(path)`： 返回路径中文件的后缀名。
+
++ `path.join([...paths])`： 使用平台特定的分隔符作为定界符将所有给定的 path 片段连接在一起，然后规范化生成的路径。
+
++ `path.isAbsolute(path)`： 判断参数 path 是否是绝对路径。
+
++ `path.resolve([...paths])`： 将路径或路径片段的序列解析为绝对路径。
+
++ `path.relative(from, to)`： 将相对路径转为绝对路径。
+
+
+### dns
+
+### domain
+
+### net
+
+## http
