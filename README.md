@@ -34,13 +34,17 @@
 
 - [React 基础](React/React基础.md)
 
+## TypeScript
+
+- [TypeScript 基础](TypeScript/TypeScript基础.md)
+
 ## NodeJs
 
 - [NodeJs学习笔记](NodeJs/NodeJs学习笔记.md)
 
-## TypeScript
+## 数据库
 
-- [TypeScript 基础](TypeScript/TypeScript基础.md)
+- [MongoDB学习笔记](DataBase/MongoDB学习笔记.md)
 
 ## 微信
 
