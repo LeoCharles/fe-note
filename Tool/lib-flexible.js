@@ -13,7 +13,7 @@
         }
         setBodyFontSize();
 
-        // 设计稿为 750px, 
+        // 设计稿为 750px
         // set 1rem = viewWidth / 7.5
         function setRemUnit () {
           var rem = docEl.clientWidth / 7.5
