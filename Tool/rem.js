@@ -2,7 +2,7 @@
 //自定义设计稿的宽度：designWidth
 //最大宽度:maxWidth
 //这段 js 的最后面有两个参数记得要设置，一个为设计稿实际宽度，一个为制作稿最大宽度，例如设计稿为750，最大宽度为 750，则为(750,750)
-;(function(designWidth, maxWidth) {
+(function(designWidth, maxWidth) {
 	var doc = document,
 	win = window,
 	docEl = doc.documentElement,
