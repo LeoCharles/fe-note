@@ -13,8 +13,9 @@
   }
   setBodyFontSize();
 
-  // 设计稿为 750px, 
-  // set 1rem = viewWidth / 7.5
+  // set 1rem = viewWidth / 10
+  // 原来为 docEl.clientWidth / 10 ，使用 px2rem-loader 自动将 px转换为rem
+  // 这里改为 / 7.5 ，在 750px 设计稿上，将测得的尺寸/100，得到 rem 单位的尺寸
   function setRemUnit () {
     var rem = docEl.clientWidth / 7.5
     docEl.style.fontSize = rem + 'px'
