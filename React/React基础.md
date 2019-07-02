@@ -360,4 +360,14 @@ class Form extends Component {
 
 ## 状态提升
 
-使用 React 中几个组件要共用状态数据时，将这部分共享的状态提升至他们最近的父组件中进行管理
+核心思想：把数据抽离到最近的共同父组件，父组件管理状态 `state`，然后通过属性 `props` 传递给子组件。
+
+## 组合
+
+## Context
+
+使用 `context`, 可以避免通过中间元素层层传递 `props`。
+
+## Hook
+
+`Hook` 可以在不编写 `class` 的情况下使用 `state` 以及其他的 React 特性。
