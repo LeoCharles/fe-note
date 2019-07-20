@@ -3,7 +3,7 @@
 /**
  * 判断数据类型
  */
-function $typeOf(val) {
+function typeOf(val) {
   return Object.prototype.toString.call(val).slice(8, -1).toLowerCase()
 }
 
@@ -11,7 +11,7 @@ function $typeOf(val) {
 /**
  * 判断是否对象是否为空
  */
-function $isEmpty(val) {
+function isEmpty(val) {
   return val === null || !(Object.keys(val) || val).length
 }
 
@@ -19,7 +19,7 @@ function $isEmpty(val) {
 /**
  * 数组和对象的深拷贝，不能序列化函数，会忽略 undefined
  */
-function $clone(obj) {
+function clone(obj) {
   return JSON.parse(JSON.stringify(obj))
 }
 
@@ -27,16 +27,16 @@ function $clone(obj) {
 /**
  * 深拷贝
  */
-function $deepClone(obj) {
+function deepClone(obj) {
   let temp = obj.constructor === Array ? [] : {}
   for (let k in obj) {
-    temp[k] = $typeOf(obj[k]) == 'object' ? $deepClone(obj[k]) : obj[k]
+    temp[k] = typeOf(obj[k]) == 'object' ? deepClone(obj[k]) : obj[k]
   }
   return temp
 }
 
 function deepCopy(data) {
-  const t = $typeOf(data)
+  const t = typeOf(data)
   let o
   
   if (t === 'array') {
@@ -62,7 +62,7 @@ function deepCopy(data) {
 /**
  * 生成唯一ID
  */
-function $generateUniqueId() {
+function getUniqueId() {
   function S4() {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
   }
@@ -72,7 +72,7 @@ function $generateUniqueId() {
 /**
  * 生成随机字符串
  */
-function $randomStr() {
+function getRandomStr() {
   const $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
   const maxPos = $chars.length
   let str = ''
@@ -82,11 +82,47 @@ function $randomStr() {
   return str
 }
 
+
+/**
+ * 字符串首位大写
+ */
+function capitalize(str){
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+function getExplorerInfo() {
+  let t = navigator.userAgent.toLowerCase();
+  return 0 <= t.indexOf("msie") ? { //ie < 11
+    type: "IE",
+    version: Number(t.match(/msie ([\d]+)/)[1])
+  } : !!t.match(/trident\/.+?rv:(([\d.]+))/) ? { // ie 11
+    type: "IE",
+    version: 11
+  } : 0 <= t.indexOf("edge") ? {
+    type: "Edge",
+    version: Number(t.match(/edge\/([\d]+)/)[1])
+  } : 0 <= t.indexOf("firefox") ? {
+    type: "Firefox",
+    version: Number(t.match(/firefox\/([\d]+)/)[1])
+  } : 0 <= t.indexOf("chrome") ? {
+    type: "Chrome",
+    version: Number(t.match(/chrome\/([\d]+)/)[1])
+  } : 0 <= t.indexOf("opera") ? {
+    type: "Opera",
+    version: Number(t.match(/opera.([\d]+)/)[1])
+  } : 0 <= t.indexOf("Safari") ? {
+    type: "Safari",
+    version: Number(t.match(/version\/([\d]+)/)[1])
+  } : {
+    type: t,
+    version: -1
+  }
+}
+
 /**
  * 对象数组去重
  */
-
-function $unique(array) {
+function unique(array) {
   let obj = {}
   return array.filter(function (item, index, array) {
     return obj.hasOwnProperty(typeof item + JSON.stringify(item)) ? false : (obj[typeof item + JSON.stringify(item)] = true)
@@ -97,7 +133,7 @@ function $unique(array) {
  * 根据对象数组根据对象中的元素去重
  */
 
-function $uniqueBy(array, key) {
+function uniqueBy(array, key) {
   let obj = {}
   return array.reduce(function (item, next) {
     obj[next[key]] ? '' : obj[next[key]] = true && item.push(next)
@@ -107,62 +143,57 @@ function $uniqueBy(array, key) {
 
 /**
  * 格式化时间
- * 时间格式 "{y}-{m}-{d} {a} {h}:{i}:{s}"
+ * dateFormater('YYYY-MM-DD HH:mm', t) ==> 2019-06-26 18:30
+ * dateFormater('YYYYMMDDHHmm', t) ==> 201906261830
  */
-function $parseTime(time, cFormat) {
-  if (!arguments) {
-    return ''
-  }
-  // 默认显示 年月日
-  let format = cFormat || '{y}-{m}-{d}'
-  let date
-  if ($typeOf(time) === 'object') {
-    date = time
-  } else {
-    if (('' + time).length === 10) {
-      time = parseInt(time) * 1000
-    }
-    date = new Date(time)
-  }
-  let formatObj = {
-    y: date.getFullYear(),
-    m: date.getMonth() + 1,
-    d: date.getDate(),
-    h: date.getHours(),
-    i: date.getMinutes(),
-    s: date.getSeconds(),
-    a: date.getDay()
-  }
-  let timeStr = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
-    let value = formatObj[key]
-    if (key === 'a') {
-      return ['一', '二', '三', '四', '五', '六', '日'][value - 1]
-    }
-    if (result.length > 0 && value < 10) {
-      value = '0' + value
-    }
-    return value || 0
-  })
-  return timeStr
+function dateFormater(formater, t){
+  let date = t ? new Date(t) : new Date(),
+    Y = date.getFullYear() + '',
+    M = date.getMonth() + 1,
+    D = date.getDate(),
+    H = date.getHours(),
+    m = date.getMinutes(),
+    s = date.getSeconds();
+  return formater.replace(/YYYY|yyyy/g,Y)
+    .replace(/YY|yy/g,Y.substr(2,2))
+    .replace(/MM/g,(M<10?'0':'') + M)
+    .replace(/DD/g,(D<10?'0':'') + D)
+    .replace(/HH|hh/g,(H<10?'0':'') + H)
+    .replace(/mm/g,(m<10?'0':'') + m)
+    .replace(/ss/g,(s<10?'0':'') + s)
 }
 
-// 时间 格式化成 2018-12-12 12:12:00
-function $timestampToTime(timestamp) {
-	const date = new Date(timestamp);
-	const Y = date.getFullYear() + '-';
-	const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-	const D = date.getDate() < 10 ? '0' + date.getDate() + ' ' : date.getDate() + ' ';
-	const h = date.getHours() < 10 ? '0' + date.getHours() + ':' : date.getHours() + ':';
-	const m = date.getMinutes() < 10 ? '0' + date.getMinutes() + ':' : date.getMinutes() + ':';
-	const s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
-	return Y + M + D + h + m + s;
+
+/**
+ * 将指定字符串由一种时间格式转化为另一种
+ * dateStrForma('20190626', 'YYYYMMDD', 'YYYY年MM月DD日') ==> 2019年06月26日
+ * dateStrForma('2019年06月26日', 'YYYY年MM月DD日', 'YYYYMMDD') ==> 20190626
+ */
+function dateStrForma(str, from, to){
+  str += ''
+  let Y = ''
+  if(~(Y = from.indexOf('YYYY'))){
+    Y = str.substr(Y, 4)
+    to = to.replace(/YYYY|yyyy/g,Y)
+  }else if(~(Y = from.indexOf('YY'))){
+    Y = str.substr(Y, 2)
+    to = to.replace(/YY|yy/g,Y)
+  }
+
+  let k,i
+  ['M','D','H','h','m','s'].forEach(s =>{
+    i = from.indexOf(s+s)
+    k = ~i ? str.substr(i, 2) : ''
+    to = to.replace(s+s, k)
+  })
+  return to
 }
 
 
 /**
  * 已过时间
  */
-function $formatPassTime(startTime) {
+function formatPassTime(startTime) {
   let currentTime = Date.parse(new Date()),
     time = currentTime - startTime,
     day = parseInt(time / (1000 * 60 * 60 * 24)),
@@ -170,11 +201,11 @@ function $formatPassTime(startTime) {
     min = parseInt(time / (1000 * 60)),
     month = parseInt(day / 30),
     year = parseInt(month / 12)
-  if (year) return year + "年前"
-  if (month) return month + "个月前"
-  if (day) return day + "天前"
-  if (hour) return hour + "小时前"
-  if (min) return min + "分钟前"
+  if (year) return year + '年前'
+  if (month) return month + '个月前'
+  if (day) return day + '天前'
+  if (hour) return hour + '小时前'
+  if (min) return min + '分钟前'
   else return '刚刚'
 }
 
@@ -182,7 +213,7 @@ function $formatPassTime(startTime) {
 /**
  * 截止时间
  */
-function $formatRemainTime(endTime) {
+function formatRemainTime(endTime) {
   var startDate = new Date() //开始时间
   var endDate = new Date(endTime) //结束时间
   var t = endDate.getTime() - startDate.getTime() //时间差
@@ -196,13 +227,13 @@ function $formatRemainTime(endTime) {
     m = Math.floor(t / 1000 / 60 % 60)
     s = Math.floor(t / 1000 % 60)
   }
-  return d + "天 " + h + "小时 " + m + "分钟 " + s + "秒"
+  return d + '天 ' + h + '小时 ' + m + '分钟 ' + s + '秒'
 }
 
 /**
  *  url 参数转对象
  */
-function $parseQueryString(url) {
+function parseQueryString(url) {
   url = url == null ? window.location.href : url
   var search = url.substring(url.lastIndexOf('?') + 1)
   if (!search) {
@@ -213,19 +244,85 @@ function $parseQueryString(url) {
 
 
 /**
+ * 全屏
+ */
+function toFullScreen(){
+  let elem = document.body;
+  elem.webkitRequestFullScreen
+  ? elem.webkitRequestFullScreen()
+  : elem.mozRequestFullScreen
+  ? elem.mozRequestFullScreen()
+  : elem.msRequestFullscreen
+  ? elem.msRequestFullscreen()
+  : elem.requestFullScreen
+  ? elem.requestFullScreen()
+  : alert('浏览器不支持全屏');
+}
+
+/**
+ * 退出全屏
+ */
+function exitFullscreen(){
+  let elem = parent.document;
+  elem.webkitCancelFullScreen
+  ? elem.webkitCancelFullScreen()
+  : elem.mozCancelFullScreen
+  ? elem.mozCancelFullScreen()
+  : elem.cancelFullScreen
+  ? elem.cancelFullScreen()
+  : elem.msExitFullscreen
+  ? elem.msExitFullscreen()
+  : elem.exitFullscreen
+  ? elem.exitFullscreen()
+  : alert('切换失败,可尝试Esc退出');
+}
+
+
+/**
+ * base64数据导出文件，文件下载
+ */
+function downloadFile(filename, data){
+  let DownloadLink = document.createElement('a');
+  if ( DownloadLink ){
+    document.body.appendChild(DownloadLink);
+    DownloadLink.style = 'display: none';
+    DownloadLink.download = filename;
+    DownloadLink.href = data;
+    if ( document.createEvent ){
+      let DownloadEvt = document.createEvent('MouseEvents');
+      DownloadEvt.initEvent('click', true, false);
+      DownloadLink.dispatchEvent(DownloadEvt);
+    }
+    else if ( document.createEventObject )
+      DownloadLink.fireEvent('onclick');
+    else if (typeof DownloadLink.onclick == 'function' )
+      DownloadLink.onclick();
+    document.body.removeChild(DownloadLink);
+  }
+}
+
+/**
  * 设置 localStorage
  */
-function $setLocalStorage(key, value) {
+function setLocalStorage(key, value) {
   if (window.localStorage) {
     window.localStorage.setItem(key, window.JSON.stringify(value))
   }
 }
 
+/**
+ * 禁止右键、选择、复制
+ */
+['contextmenu', 'selectstart', 'copy'].forEach(function(ev){
+  document.addEventListener(ev, function(event){
+      return event.returnValue = false
+  })
+})
 
 /**
  * 获取 localStorage
  */
-function $getLocalStorage(key) {
+function getLocalStorage(key) {
   var json = ''
   if (window.localStorage) {
     json = window.localStorage.getItem(key)
@@ -237,7 +334,7 @@ function $getLocalStorage(key) {
 /**
  * 删除 localStorage
  */
-function $delLocalStorage(key) {
+function delLocalStorage(key) {
   if (window.localStorage) {
     window.localStorage.removeItem(key)
   }
@@ -246,7 +343,7 @@ function $delLocalStorage(key) {
 /**
  * 函数节流
  */
-function $throttle(fn, wait = 100) {
+function throttle(fn, wait = 100) {
   // 利用闭包保存定时器和上次执行时间
   let timer = null
   let previous // 上次执行时间
@@ -271,7 +368,7 @@ function $throttle(fn, wait = 100) {
 /**
  * 函数防抖
  */
-function $debounce(fn, delay = 100) {
+function debounce(fn, delay = 100) {
   let timer = null
   return function (...args) {
     if (timer) clearTimeout(timer)
@@ -298,57 +395,9 @@ function plain2Tree(obj) {
   return res
 }
 
-// todo
-var data = [
-  {
-    province: "浙江",
-    city: "杭州",
-    name: "西湖",
-    area: 'A区'
-  },
-  {
-    province: "四川",
-    city: "成都",
-    name: "锦里",
-    area: 'D区'
-  },
-  {
-    province: "四川",
-    city: "成都",
-    name: "方所",
-    area: 'B区'
-  },
-  {
-    province: "四川",
-    city: "阿坝",
-    name: "九寨沟",
-    area: 'C区'
-  }
-];
-
-var data = [
-  {
-    value: "浙江",
-    children: [
-      { value: "杭州", children: [{ value: "西湖", children: [{ value: "A区" }] }] }
-    ]
-  },
-  {
-    value: "四川",
-    children: [
-      {
-        value: "成都",
-        children: [
-          { value: "锦里", children: [{ value: "D区" }] },
-          { value: "方所", children: [{ value: "B区" }] }
-        ]
-      },
-      { value: "阿坝", children: [{ value: "九寨沟", children: [{ value: "C区" }] }] }
-    ]
-  }
-];
-
-// 把一个树形结构，变成扁平化列表
+/**
+ * 把一个树形结构，变成扁平化列表
+ */
 function toFlat(tree, [key, ...rest], result = {}) {
   if (result[key] == null) {
     result[key] = tree.value;
@@ -361,7 +410,9 @@ function toFlat(tree, [key, ...rest], result = {}) {
   return rest.length ? toFlatList(tree.children, rest, result) : [result];
 }
 
-// 把一个树形结构的列表，变成扁平化列表
+/**
+ * 把一个树形结构的列表，变成扁平化列表
+ */
 function toFlatList(treeList, keys, result = {}) {
   return treeList.reduce(
     (list, tree) => list.concat(toFlat(tree, keys, result)),
@@ -369,119 +420,49 @@ function toFlatList(treeList, keys, result = {}) {
   );
 }
 
-// 转换树形结构为列表结构
+/**
+ * 转换树形结构为列表结构
+ */
 function treeToList(treeList = [], keys) {
   return toFlatList(treeList, keys);
 }
 
-var result = treeToList(data, ["province", "city", "name", "area"]);
-console.log("result", result);
-
-// 将一个扁平对象，根据 keys 树形化
+/**
+ * 将一个扁平对象，根据 keys 树形化
+ */
 function toTree(obj, [key, ...rest], result = {}) {
-    if (result.value == null) {
-        result.value = obj[key]
-        if (rest.length) {
-            result.children = toTreeList(obj, rest)
-        }
-    } else if (result.value === obj[key] && rest.length) {
-        toTreeList(obj, rest, result.children)
+  if (result.value == null) {
+    result.value = obj[key]
+    if (rest.length) {
+      result.children = toTreeList(obj, rest)
     }
-    return result
+  } else if (result.value === obj[key] && rest.length) {
+    toTreeList(obj, rest, result.children)
+  }
+  return result
 }
 
-// 将一个扁平对象的树形化产物，不重复地放到 list 里
+/**
+ * 一个扁平对象的树形化产物，不重复地放到 list 里
+ */
 function toTreeList(obj, keys, list = []) {
     let value = obj[keys[0]]
     let target = list.find(item => item.value === value)
     if (target) {
-        toTree(obj, keys, target)
+      toTree(obj, keys, target)
     } else {
-        list.push(toTree(obj, keys))
+      list.push(toTree(obj, keys))
     }
     return list
 }
 
-// 将一个扁平化对象组成的列表，变成树形化的列表
-function listToTree(list=[], keys=[]) {
-    return list.reduce(
-        (result, obj) => toTreeList(obj, keys, result),
-        []
-    )
-}
-
-console.log('result', listToTree(data, ['province', 'city', 'name', 'area']))
-
 /**
- *  微信小程序异步函数转成 promise
+ * 将一个扁平化对象组成的列表，变成树形化的列表
  */
- const promisify = original => {
-  return function(opt) {
-    return new Promise((resolve, reject) => {
-      opt = Object.assign({
-        success: resolve,
-        fail: reject
-      }, opt)
-      original(opt)
-    })
-  }
-}
-  /* 示例
-  promisify(wx.getStorage)({key: 'key'}).then(res => {
-    // success
-  }).catch(err => {
-      // fail
-  })
- */
- 
- /**
- * 微信实现 watch 属性，监听数据变化
- * 首先在需要的页面引入
- * 在 Page 的onLoad钩子设置监听器
- */
- function observe(obj, key, watchFun, deep, page) {
-  let val = obj[key];
-
-  if (val != null && typeof val === "object" && deep) {
-    Object.keys(val).forEach((item) => {
-      observe(val, item, watchFun, deep, page);
-    });
-  }
-
-  Object.defineProperty(obj, key, {
-    configurable: true,
-    enumerable: true,
-    set: function(value) {
-      watchFun.call(page, value, val);
-      val = value;
-
-      if (deep) {
-        observe(obj, key, watchFun, deep, page);
-      }
-    },
-    get: function() {
-      return val;
-    }
-  });
+function listToTree(list=[], keys=[]) {
+  return list.reduce(
+    (result, obj) => toTreeList(obj, keys, result),
+    []
+  )
 }
 
-export function setWatcher(page) {
-  let data = page.data;
-  let watch = page.watch;
-
-  Object.keys(watch).forEach((item) => {
-    let targetData = data;
-    let keys = item.split(".");
-
-    for (let i = 0; i < keys.length - 1; i++) {
-      targetData = targetData[keys[i]];
-    }
-
-    let targetKey = keys[keys.length - 1];
-
-    let watchFun = watch[item].handler || watch[item];
-
-    let deep = watch[item].deep;
-    observe(targetData, targetKey, watchFun, deep, page);
-  });
-}
