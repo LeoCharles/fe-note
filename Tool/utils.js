@@ -130,10 +130,16 @@ function unique(array) {
 }
 
 /**
- * 根据对象数组根据对象中的元素去重
+ * 对象数组根据某一属性名去重
  */
 
 function uniqueBy(array, key) {
+  return array.filter((item, index, self) => {
+    return self.findIndex(el => el[key] === item[key]) ===index
+  })
+}
+
+function uniqueBy2(array, key) {
   let obj = {}
   return array.reduce(function (item, next) {
     obj[next[key]] ? '' : obj[next[key]] = true && item.push(next)
