@@ -41,10 +41,12 @@
 ## NodeJs
 
 - [NodeJs学习笔记](NodeJs/NodeJs学习笔记.md)
+- [Express学习笔记](NodeJs/Express学习笔记.md)
 
 ## 数据库
 
 - [MongoDB学习笔记](DataBase/MongoDB学习笔记.md)
+- [MySQL学习笔记](DataBase/MySQL学习笔记.md)
 
 ## 微信
 
