@@ -294,7 +294,7 @@ export default function Ref() {
 }
 ```
 
-## useImperativeHanle
+## useImperativeHandle
 
 `useImperativeHandle` 子组件可以选择性的暴露一些方法给父组件，这样可以隐藏一些私有方法和属性。
 
