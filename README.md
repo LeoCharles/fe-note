@@ -17,15 +17,15 @@
 - [原型](JavaScript/06-原型.md)
 - [继承](JavaScript/07-继承.md)
 
-## Browser
+## Web API
 
-- [Browser](Browser/Browser.md)
-- [DOM](Browser/DOM.md)
-- [EventTarget](Browser/EventTarget.md)
+- [IndexedDB](WebAPI/IndexedDB.md)
+- [WebWorker](WebAPI/WebWorker.md)
+- [WebSocket](WebAPI/WebSocket.md)
 
 ## Vue
 
-- [Vue 学习笔记](Vue/Vue学习笔记.md)
+- [Vue 学习基础](Vue/Vue基础.md)
 - [Vue 框架原理](Vue/Vue框架原理.md)
 - [Vue 最佳实践](Vue/Vue最佳实践.md)
 - [Vuex](Vue/vuex.md)
@@ -39,25 +39,15 @@
 
 - [TypeScript 基础](TypeScript/TypeScript基础.md)
 
-## NodeJs
+## 浏览器
 
-- [NodeJs学习笔记](NodeJs/NodeJs学习笔记.md)
-- [Express学习笔记](NodeJs/Express学习笔记.md)
-
-## 数据库
-
-- [MongoDB学习笔记](DataBase/MongoDB学习笔记.md)
-- [MySQL学习笔记](DataBase/MySQL学习笔记.md)
+- [Browser](Browser/Browser.md)
+- [DOM](Browser/DOM.md)
+- [EventTarget](Browser/EventTarget.md)
 
 ## 微信
 
 - [微信小程序](WX/微信小程序.md)
-
-## Web API
-
-- [IndexedDB](WebAPI/IndexedDB.md)
-- [WebWorker](WebAPI/WebWorker.md)
-- [WebSocket](WebAPI/WebSocket.md)
 
 ## 工具库
 
