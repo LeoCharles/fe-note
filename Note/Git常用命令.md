@@ -1,5 +1,7 @@
 # Git 常用命令
 
+![git](/img/git.png)
+
 - Workspace：工作区
 - Index / Stage：暂存区
 - Repository：仓库区（版本库）
