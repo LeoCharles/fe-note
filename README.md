@@ -6,16 +6,16 @@
 
 ## JavaScript
 
-- [JS 基础](JavaScript/JS基础.md)
-- [ES6 基础](JavaScript/ES6基础.md)
-- [Promise](JavaScript/Promise.md)
-- [执行上下文与变量对象](JavaScript/01-执行上下文与变量对象.md)
-- [作用域链与闭包](JavaScript/02-作用域链与闭包.md)
-- [this 对象](JavaScript/03-this对象.md)
-- [函数](JavaScript/04-函数.md)
-- [创建对象](JavaScript/05-创建对象.md)
-- [原型](JavaScript/06-原型.md)
-- [继承](JavaScript/07-继承.md)
+- [JS 基础](ECMAScript/JavaScript/JS基础.md)
+- [ES6 基础](ECMAScript/ES6/ES6基础.md)
+- [Promise](ECMAScript/ES6/Promise.md)
+- [执行上下文与变量对象](ECMAScript/JavaScript/01-执行上下文与变量对象.md)
+- [作用域链与闭包](ECMAScript/JavaScript/02-作用域链与闭包.md)
+- [this 对象](ECMAScript/JavaScript/03-this对象.md)
+- [函数](ECMAScript/JavaScript/04-函数.md)
+- [创建对象](ECMAScript/JavaScript/05-创建对象.md)
+- [原型](ECMAScript/JavaScript/06-原型.md)
+- [继承](ECMAScript/JavaScript/07-继承.md)
 
 ## Web API
 
@@ -41,9 +41,9 @@
 
 ## 浏览器
 
-- [Browser](Browser/Browser.md)
-- [DOM](Browser/DOM.md)
-- [EventTarget](Browser/EventTarget.md)
+- [Browser](ECMAScript/BOM/Browser.md)
+- [DOM](ECMAScript/DOM/DOM.md)
+- [EventTarget](ECMAScript/DOM/EventTarget.md)
 
 ## 微信
 
